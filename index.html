@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f7f2e8}
+  a{color:#c8431c}
+  a:hover{color:#a3350f}
+  @keyframes hopIdle{0%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}100%{transform:translateY(0) rotate(-4deg)}}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-9px) rotate(var(--r,0deg))}}
+  @keyframes bubbleIn{0%{opacity:0;transform:translateY(8px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes bounceCue{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+  @keyframes marqueeL{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  @keyframes marqueeR{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+  @keyframes cardIn{0%{opacity:0;transform:translateY(40px) scale(.7) rotate(0deg)}60%{opacity:1;transform:translateY(-6px) scale(1.05) rotate(var(--r))}100%{opacity:1;transform:translateY(0) scale(1) rotate(var(--r))}}
+</style>
+</helmet>
+
+<div style="background:#f7f2e8;color:#14110d;font-family:'DM Sans',sans-serif;overflow-x:clip;position:relative">
+
+<div style="{{ cursorStyle }}"></div>
+
+<div style="{{ navStyle }}">
+  <div style="display:flex;align-items:center;gap:10px">
+    <img src="./hoppr-lockup-v2-trimmed.png" alt="Hoppr" style="height:45px;width:auto;object-fit:contain">
+  </div>
+  <div style="display:flex;align-items:center;gap:28px">
+    <div onClick="{{ goLearn }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">How it works</div>
+    <div onClick="{{ goTogether }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">Together</div>
+    <div onClick="{{ goWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:10px 18px;font:500 13px/1 'DM Sans',sans-serif">Join early ↗</div>
+  </div>
+</div>
+
+<img src="./hoppr-mark.png" alt="" style="{{ scrollMascotStyle }}">
+<div style="{{ scrollBubbleStyle }}">{{ scrollBubbleText }}</div>
+
+<div ref="{{ refHero }}" data-sec="hero" data-screen-label="Hero" style="position:relative;padding:90px 6vw 40px;max-width:1160px;margin:0 auto;box-sizing:border-box">
+  <svg width="26" height="26" viewBox="0 0 24 24" style="position:absolute;top:130px;left:2%;animation:bob 3.4s ease-in-out infinite;--r:-8deg"><path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" fill="#c8431c"/></svg>
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.6" stroke-linecap="round" style="position:absolute;top:60px;right:4%;animation:bob 4s ease-in-out infinite .3s;--r:10deg"><path d="M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V9Z"/><path d="M17 10h2a2 2 0 0 1 0 4h-2"/><path d="M8 4c0 1 1 1 1 2s-1 1-1 2"/><path d="M12 4c0 1 1 1 1 2s-1 1-1 2"/></svg>
+  <svg width="22" height="22" viewBox="0 0 24 24" style="position:absolute;top:280px;left:10%;animation:bob 3.8s ease-in-out infinite .6s;--r:14deg"><circle cx="12" cy="12" r="9" fill="none" stroke="#14110d" stroke-width="1.6"/><path d="M8 10c0-1 4-4 8 0M9 15c1.5 1 4.5 1 6 0" stroke="#14110d" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+
+  <div style="text-align:center;max-width:640px;margin:0 auto 44px">
+    <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:20px">For people who never know where to go</div>
+    <h1 style="font:400 62px/1.05 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.02em">Don't know where to go? <span style="color:#c8431c;font-style:italic">good.</span></h1>
+    <p style="font:400 18px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 30px;text-wrap:pretty">Tell Hoppr what you're feeling. We'll narrow down the noise and find somewhere that fits.</p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <div onClick="{{ goWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Get early access →</div>
+      <div style="font:400 12px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.04em">Launching first in Ann Arbor</div>
+    </div>
+  </div>
+
+  <div style="background:#efe8da;border-radius:32px;padding:44px 5vw;display:flex;justify-content:center;align-items:center;gap:36px;flex-wrap:wrap;position:relative;overflow:hidden">
+    <div style="{{ phoneOnboardStyle }}">
+      <div style="padding:22px 18px;display:flex;flex-direction:column;height:100%;box-sizing:border-box">
+        <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:16px">tonight, i want...</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ heroOptions }}" as="o" hint-placeholder-count="3">
+            <div style="{{ o.style }}">{{ o.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <img src="./hoppr-mark.png" alt="" style="{{ heroMascotStyle }}">
+    <div style="{{ phoneResultStyle }}">
+      <div style="{{ heroResultStyle }}">
+        <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8431c;margin-bottom:10px">hoppr's pick</div>
+        <div style="height:100px;border-radius:14px;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px);margin-bottom:12px"></div>
+        <div style="font:400 22px/1.15 'Instrument Serif',serif;margin-bottom:4px">Corner Table</div>
+        <div style="font:400 11px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.5)">quiet, walkable, open late</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:30px;text-align:center;font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.4);animation:bounceCue 2s ease-in-out infinite">↓ scroll to hop</div>
+</div>
+
+<div ref="{{ refLearn }}" data-sec="learn" data-screen-label="It learns" style="{{ learnPanelStyle }}">
+  <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute;top:26px;right:8%;animation:bob 3.6s ease-in-out infinite;--r:12deg"><path d="M12 2c-3 3-6 6-6 10a6 6 0 0012 0c0-4-3-7-6-10Z" fill="#c8431c" opacity="0.7"/></svg>
+  <div style="position:sticky;top:120px;flex:1;min-width:280px">
+    <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">01 / it learns</div>
+    <h2 style="font:400 40px/1.12 'Instrument Serif',serif;margin:0 0 16px;letter-spacing:-.01em;text-wrap:pretty">The more you hop, the more it gets you.</h2>
+    <p style="font:400 16px/1.6 'DM Sans',sans-serif;color:rgba(20,17,13,.62);margin:0">Every answer, save, and rating shapes your taste. Recommendations start feeling less like search results and more like something you'd actually pick.</p>
+  </div>
+  <div style="flex:1;min-width:280px;background:#fffdf8;border-radius:20px;padding:26px;box-sizing:border-box">
+    <div style="font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.45);margin-bottom:18px">Your taste, lately</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <sc-for list="{{ tasteChips }}" as="c" hint-placeholder-count="8">
+        <div style="{{ c.style }}">{{ c.label }}</div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+
+<div ref="{{ refOverload }}" data-sec="overload" data-screen-label="400 to 3" style="max-width:1160px;margin:60px auto 0;padding:50px 6vw;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:26px">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8431c" stroke-width="1.6" stroke-linecap="round" style="position:absolute;bottom:10px;left:7%;opacity:.5;animation:bob 4.2s ease-in-out infinite .3s"><path d="M12 3v18M3 12h18"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute;top:40px;right:6%;opacity:.5;animation:bob 3.6s ease-in-out infinite;--r:10deg"><path d="M4 4c6 0 10 4 10 10 0-6 4-10 10-10-6 0-10 4-10 10C14 8 10 4 4 4Z" fill="none" stroke="#14110d" stroke-width="1.4"/></svg>
+    <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c">02 / focus</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <h2 style="{{ overloadStyles.headline1 }}">400 places nearby.</h2>
+      <h2 style="{{ overloadStyles.headline2 }}">You need <span style="color:#c8431c;font-style:italic">one.</span></h2>
+    </div>
+    <div style="position:relative;width:100%;max-width:760px;margin-top:20px">
+    <div style="{{ overloadStyles.cloud }}">
+      <sc-for list="{{ noiseNames }}" as="n" hint-placeholder-count="30">
+        <div style="font:400 13px/1 'DM Sans',sans-serif;border:1px solid rgba(20,17,13,.18);border-radius:100px;padding:6px 12px">{{ n.label }}</div>
+      </sc-for>
+    </div>
+    <div style="{{ overloadStyles.cards }}">
+      <div style="{{ overloadStyles.card1 }}">
+        <div style="height:90px;border-radius:16px 16px 0 0;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px)"></div>
+        <div style="padding:10px 14px"><div style="font:400 17px/1.15 'Instrument Serif',serif">Wren &amp; Rye</div><div style="font:500 10px/1 'JetBrains Mono',monospace;color:#c8431c">91% your taste</div></div>
+      </div>
+      <div style="{{ overloadStyles.card2 }}">
+        <div style="height:90px;border-radius:16px 16px 0 0;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px)"></div>
+        <div style="padding:10px 14px"><div style="font:400 17px/1.15 'Instrument Serif',serif">Little Almanac</div><div style="font:500 10px/1 'JetBrains Mono',monospace;color:#c8431c">87% your taste</div></div>
+      </div>
+      <div style="{{ overloadStyles.card0 }}">
+        <div style="height:100px;border-radius:16px 16px 0 0;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px)"></div>
+        <div style="padding:12px 16px"><div style="font:400 20px/1.15 'Instrument Serif',serif">Corner Table</div><div style="font:500 11px/1 'JetBrains Mono',monospace;color:#c8431c">94% your taste</div></div>
+      </div>
+    </div>
+    </div>
+</div>
+
+<div style="max-width:1160px;margin:50px auto 0;padding:0 6vw;box-sizing:border-box;text-align:center">
+  <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.45);margin-bottom:28px">Try it — drag through your picks</div>
+  <div style="position:relative;height:190px;max-width:220px;margin:0 auto">
+    <sc-for list="{{ dragCards }}" as="c" hint-placeholder-count="3">
+      <div onPointerDown="{{ c.onDown }}" style="{{ c.style }}">
+        <div style="{{ swipeLabelStyle }}">{{ swipeLabelText }}</div>
+        <div style="height:100px;border-radius:12px 12px 0 0;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px)"></div>
+        <div style="padding:10px 14px">
+          <div style="font:400 17px/1.15 'Instrument Serif',serif;margin-bottom:2px">{{ c.name }}</div>
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;color:#c8431c">{{ c.match }} your taste</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="margin-top:14px;font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:rgba(20,17,13,.4)">← swipe or drag</div>
+</div>
+
+<div ref="{{ refMenu }}" data-sec="menu" data-screen-label="Menu chooser" style="max-width:1160px;margin:60px auto 0;padding:0 6vw;box-sizing:border-box">
+  <div style="{{ menuPanelStyle }}">
+    <svg width="22" height="22" viewBox="0 0 24 24" style="position:absolute;top:22px;right:9%;animation:bob 3.5s ease-in-out infinite .4s;--r:8deg"><path d="M4 3h13l3 3-3 3H4V3Z" fill="#c8431c" opacity=".75"/></svg>
+    <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">03 / decide</div>
+    <h2 style="font:400 40px/1.1 'Instrument Serif',serif;margin:0 0 30px;letter-spacing:-.01em">What should I order?</h2>
+    <div style="{{ phoneMenuStyle }}">
+      <div style="padding:20px 16px;box-sizing:border-box;height:100%;display:flex;flex-direction:column;text-align:left;position:relative">
+        <div style="font:400 9px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:12px">menu</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="4">
+            <div style="{{ m.style }}"><span>{{ m.name }}</span><span>${{ m.price }}</span></div>
+          </sc-for>
+        </div>
+        <div style="{{ scanLineStyle }}"></div>
+        <div style="{{ menuResultStyle }}">
+          <div style="background:#efe8da;border:1.5px solid #c8431c;border-radius:12px;padding:14px;text-align:left;width:100%">
+            <div style="font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8431c;margin-bottom:6px">hoppr's pick</div>
+            <div style="font:400 19px/1.15 'Instrument Serif',serif;margin-bottom:4px">Spicy Miso Ramen</div>
+            <div style="font:400 11px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.55)">rich · spicy · exactly your thing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ref="{{ refTogether }}" data-sec="together" data-screen-label="Together" style="max-width:900px;margin:60px auto 0;padding:0 6vw;box-sizing:border-box;text-align:center;position:relative">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.5" stroke-linecap="round" style="position:absolute;top:0;left:6%;opacity:.35;animation:bob 4s ease-in-out infinite .2s"><path d="M6 12c0-4 3-7 6-7s6 3 6 7-3 9-6 9-6-5-6-9Z"/></svg>
+  <svg width="18" height="18" viewBox="0 0 24 24" style="position:absolute;top:30px;right:8%;opacity:.4;animation:bob 3.6s ease-in-out infinite .5s;--r:-10deg"><path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10Z" fill="#c8431c" opacity=".8"/></svg>
+  <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">04 / together</div>
+  <h2 style="font:400 50px/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Nobody wants to pick.</h2>
+  <h2 style="font:400 50px/1.1 'Instrument Serif',serif;margin:0 0 12px;letter-spacing:-.01em">So <span style="color:#c8431c;font-style:italic">everybody</span> does.</h2>
+  <p style="font:400 15px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.55);margin:0 0 46px">Everyone picks separately. Hoppr finds the overlap.</p>
+  <div style="position:relative;max-width:500px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center">
+    <sc-for list="{{ togetherVotes }}" as="v" hint-placeholder-count="4">
+      <div style="justify-self:{{ v.side }};background:#efe8da;border-radius:100px;padding:9px 15px;font:500 13px/1 'DM Sans',sans-serif;display:flex;align-items:center;gap:7px">{{ v.name }}<span style="{{ v.heartStyle }}">♥</span></div>
+    </sc-for>
+  </div>
+  <div style="{{ togetherCardStyle }}">
+    <div style="{{ togetherStampStyle }}">Unanimous</div>
+    <div style="height:110px;border-radius:12px;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px);margin-bottom:12px"></div>
+    <div style="font:400 22px/1.15 'Instrument Serif',serif">Corner Table</div>
+    <div style="font:400 12px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.5);margin-top:4px">Walkable, sit-down, done by eleven</div>
+  </div>
+  <p style="font:400 15px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.55);font-style:italic;margin:24px auto 0;max-width:380px">somehow, everyone agreed.</p>
+</div>
+
+<div ref="{{ refTry }}" data-sec="try" data-screen-label="Try Hoppr" style="{{ tryPanelStyle }}">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.5" stroke-linecap="round" style="position:absolute;top:20px;left:7%;opacity:.35;animation:bob 4.4s ease-in-out infinite"><path d="M4 12c3-6 6-9 8-9s5 3 8 9c-3 6-6 9-8 9s-5-3-8-9Z"/><circle cx="12" cy="12" r="2.4"/></svg>
+  <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">Try hoppr</div>
+  <h2 style="font:400 36px/1.15 'Instrument Serif',serif;margin:0 0 30px;letter-spacing:-.01em">What sounds right tonight?</h2>
+  <sc-if value="{{ !tryShowResult }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:22px">
+      <sc-for list="{{ tryQ1Options }}" as="o" hint-placeholder-count="4">
+        <div onClick="{{ o.onPick }}" style="{{ o.style }}">{{ o.label }}</div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ tryShowQ2 }}" hint-placeholder-val="{{ false }}">
+      <div style="font:500 13px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin-bottom:14px">How far are you willing to go?</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+        <sc-for list="{{ tryQ2Options }}" as="o" hint-placeholder-count="2">
+          <div onClick="{{ o.onPick }}" style="{{ o.style }}">{{ o.label }}</div>
+        </sc-for>
+      </div>
+    </sc-if>
+  </sc-if>
+  <sc-if value="{{ tryShowResult }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:280px;margin:0 auto;background:#efe8da;border-radius:16px;padding:20px;text-align:left">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8431c;margin-bottom:8px">your hop</div>
+      <div style="height:100px;border-radius:12px;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px);margin-bottom:12px"></div>
+      <div style="font:400 24px/1.15 'Instrument Serif',serif;margin-bottom:4px">Frita Batidos</div>
+      <div style="font:500 11px/1 'JetBrains Mono',monospace;color:#c8431c">94% your taste</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px">
+      <div onClick="{{ goWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:15px 28px;font:500 15px/1 'DM Sans',sans-serif">Join Hoppr to keep going →</div>
+      <div onClick="{{ onTryReset }}" style="cursor:pointer;font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.45);text-decoration:underline">Try again</div>
+    </div>
+  </sc-if>
+</div>
+
+<div ref="{{ refMarquee }}" data-sec="marquee" data-screen-label="Social proof" style="padding:90px 0 0;overflow:hidden;position:relative">
+  <svg width="20" height="20" viewBox="0 0 24 24" style="position:absolute;top:8px;left:6%;opacity:.4;animation:bob 3.8s ease-in-out infinite .3s;--r:12deg"><circle cx="12" cy="12" r="9" fill="none" stroke="#c8431c" stroke-width="1.5"/></svg>
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.5" stroke-linecap="round" style="position:absolute;top:30px;right:7%;opacity:.35;animation:bob 4.2s ease-in-out infinite .5s"><path d="M4 3h13l3 3-3 3H4V3Z"/></svg>
+  <div style="text-align:center;margin-bottom:36px">
+    <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">Built for actual indecisive people</div>
+    <h2 style="font:400 38px/1.1 'Instrument Serif',serif;margin:0;letter-spacing:-.01em">You know the feeling.</h2>
+  </div>
+  <div style="display:flex;gap:14px;width:max-content;animation:marqueeL 34s linear infinite;margin-bottom:14px">
+    <sc-for list="{{ marqueeRow1 }}" as="m" hint-placeholder-count="8">
+      <div style="background:#fffdf8;border:1px solid rgba(20,17,13,.1);border-radius:18px;padding:12px 18px;font:400 14px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.72);white-space:nowrap">{{ m.text }}</div>
+    </sc-for>
+  </div>
+  <div style="display:flex;gap:14px;width:max-content;animation:marqueeR 34s linear infinite">
+    <sc-for list="{{ marqueeRow2 }}" as="m" hint-placeholder-count="8">
+      <div style="background:#fffdf8;border:1px solid rgba(20,17,13,.1);border-radius:18px;padding:12px 18px;font:400 14px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.72);white-space:nowrap">{{ m.text }}</div>
+    </sc-for>
+  </div>
+</div>
+
+<div ref="{{ refWaitlist }}" data-sec="waitlist" data-screen-label="Waitlist" style="max-width:720px;margin:20px auto 0;padding:0 6vw 30px;box-sizing:border-box;text-align:center;position:relative">
+  <svg width="20" height="20" viewBox="0 0 24 24" style="position:absolute;top:60px;left:8%;opacity:.25;animation:bob 4s ease-in-out infinite"><circle cx="12" cy="12" r="9" fill="none" stroke="#14110d" stroke-width="1.6"/><path d="M9 9v6M15 9v6" stroke="#14110d" stroke-width="1.4"/></svg>
+  <svg width="18" height="18" viewBox="0 0 24 24" style="position:absolute;top:100px;right:9%;opacity:.25;animation:bob 4.6s ease-in-out infinite .4s"><ellipse cx="12" cy="12" rx="9" ry="6" fill="none" stroke="#c8431c" stroke-width="1.6"/></svg>
+  <svg width="16" height="16" viewBox="0 0 24 24" style="position:absolute;bottom:40px;left:14%;opacity:.22;animation:bob 3.8s ease-in-out infinite .2s"><path d="M12 3v14M12 17l-4-4M12 17l4-4" stroke="#14110d" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+
+  <img src="./hoppr-mark.png" alt="" style="{{ waitlistMascotStyle }}">
+
+  <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:18px">Early access</div>
+  <h2 style="font:400 52px/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Your next favorite place</h2>
+  <h2 style="font:400 52px/1.1 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.01em">is probably nearby.</h2>
+  <p style="font:400 17px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 28px;max-width:440px">We're opening Hoppr city by city. Join the first group in your area.</p>
+  <div style="display:inline-flex;align-items:center;gap:8px;background:#efe8da;border-radius:100px;padding:8px 16px;margin-bottom:36px">
+    <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop</div>
+    <div style="font:500 13px/1 'JetBrains Mono',monospace;letter-spacing:.06em;color:#14110d">Ann Arbor, MI</div>
+  </div>
+
+  <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:480px;margin:0 auto;text-align:left">
+      <div style="font:400 34px/1.15 'Instrument Serif',serif;margin-bottom:4px;text-align:center">You're in.</div>
+      <div style="font:400 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:rgba(20,17,13,.45);margin-bottom:26px;text-align:center">#184 in Ann Arbor</div>
+      <p style="font:400 15px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.62);margin:0 0 18px;text-align:center">Bring the people you always struggle to pick with.</p>
+      <div style="display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.5);border:1px solid rgba(20,17,13,.18);border-radius:14px;padding:10px 10px 10px 16px;margin-bottom:28px">
+        <div style="flex:1;font:400 13px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.6);overflow:hidden;text-overflow:ellipsis">hoppr.app/v/yourcode</div>
+        <div onClick="{{ onCopyInvite }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:10px;padding:9px 14px;font:500 12px/1 'DM Sans',sans-serif;white-space:nowrap">{{ copyLabel }}</div>
+      </div>
+      <sc-if value="{{ showReferralTiers }}" hint-placeholder-val="{{ true }}">
+        <div style="position:relative;padding:0 6px 8px">
+          <div style="position:absolute;top:6px;left:6%;right:6%;height:2px;background:rgba(20,17,13,.15)"></div>
+          <div style="display:flex;justify-content:space-between;position:relative">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:25%"><div style="width:12px;height:12px;border-radius:50%;background:#14110d"></div><div style="font:500 10px/1.3 'JetBrains Mono',monospace;text-align:center;color:rgba(20,17,13,.5)">YOU<br>#184</div></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:25%"><div style="width:12px;height:12px;border-radius:50%;background:#c8431c"></div><div style="font:500 10px/1.3 'JetBrains Mono',monospace;text-align:center;color:rgba(20,17,13,.5)">1 FRIEND<br>+10 spots</div></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:25%"><div style="width:12px;height:12px;border-radius:50%;background:#c8431c"></div><div style="font:500 10px/1.3 'JetBrains Mono',monospace;text-align:center;color:rgba(20,17,13,.5)">3 FRIENDS<br>early beta</div></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:25%"><img src="./hoppr-mark.png" style="width:16px;height:16px;object-fit:contain"><div style="font:500 10px/1.3 'JetBrains Mono',monospace;text-align:center;color:rgba(20,17,13,.5)">5 FRIENDS<br>founding hopper</div></div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
+    <form onSubmit="{{ onSubmit }}" style="text-align:left;max-width:480px;margin:0 auto">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div>
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Email</div>
+          <input value="{{ waitlist.email }}" onChange="{{ onEmail }}" placeholder="you@email.com" type="email" style="{{ inputStyle }}">
+        </div>
+        <div>
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">First name</div>
+          <input value="{{ waitlist.name }}" onChange="{{ onName }}" placeholder="Steven" style="{{ inputStyle }}">
+        </div>
+      </div>
+      <div style="margin-bottom:18px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">City or ZIP</div>
+        <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" placeholder="Ann Arbor" style="{{ inputStyle }}">
+      </div>
+      <button type="submit" style="width:100%;cursor:pointer;background:#c8431c;color:#f7f2e8;border:none;border-radius:100px;padding:17px;font:500 16px/1 'DM Sans',sans-serif">Get early access →</button>
+    </form>
+    <div style="font:400 11px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:18px;text-align:center">Free during beta · no spam · leave anytime</div>
+  </sc-if>
+</div>
+
+<div style="padding:40px 6vw 30px;text-align:center;border-top:1px solid rgba(20,17,13,.08);background:#efe8da">
+  <img src="./hoppr-wordmark-v2-trimmed.png" alt="" style="width:120px;height:auto;object-fit:contain;margin-bottom:10px">
+  <div style="font:400 16px/1.4 'Instrument Serif',serif;font-style:italic;color:rgba(20,17,13,.55);margin-bottom:16px">for people who don't know where they're going yet.</div>
+  <div style="display:flex;gap:20px;justify-content:center;margin-bottom:16px">
+    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Instagram</a>
+    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">TikTok</a>
+    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Contact</a>
+    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Privacy</a>
+  </div>
+  <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.35)">made in ann arbor · 2026</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{},&quot;mascotEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;motionIntensity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;full&quot;,&quot;tsType&quot;:&quot;'full'|'subtle'&quot;,&quot;options&quot;:[&quot;full&quot;,&quot;subtle&quot;],&quot;section&quot;:&quot;Motion&quot;},&quot;showReferralTiers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Growth&quot;}}">
+class Component extends DCLogic {
+  state = {
+    visible: {}, active: 'hero', mouse: { x: -100, y: -100 }, mouseActive: false,
+    waitlist: { name: '', email: '', cityZip: '', phone: '' }, submitted: false, copied: false,
+    heroStep: 0, togetherStep: 0, menuStep: 0, overloadProgress: 0,
+    dragOrder: [0, 1, 2], dragX: 0, draggingTop: false,
+    tryQ1: null, tryQ2: null
+  };
+  sectionOrder = ['hero', 'learn', 'overload', 'menu', 'together', 'try', 'marquee', 'waitlist'];
+  sectionEls = {};
+  refFns = {};
+
+  componentDidMount() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { const name = e.target.dataset.sec; if (e.isIntersecting) { this.setState(s => ({ visible: { ...s.visible, [name]: true } })); if (name === 'overload' && !this.overloadStarted) { this.overloadStarted = true; this.animateOverload(); } } });
+      let best = null, bestRatio = 0;
+      this.sectionOrder.forEach(name => {
+        const el = this.sectionEls[name]; if (!el) return;
+        const rect = el.getBoundingClientRect(); const vh = window.innerHeight;
+        const visH = Math.min(rect.bottom, vh) - Math.max(rect.top, 0);
+        const ratio = Math.max(0, visH) / Math.min(rect.height, vh || 1);
+        if (ratio > bestRatio) { bestRatio = ratio; best = name; }
+      });
+      if (best) this.setState({ active: best });
+    }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+    Object.keys(this.sectionEls).forEach(k => this.observer.observe(this.sectionEls[k]));
+    this.onMove = (e) => this.setState({ mouse: { x: e.clientX, y: e.clientY }, mouseActive: true });
+    window.addEventListener('mousemove', this.onMove);
+    this.heroTimer = setInterval(() => { if (this.state.visible.hero) this.setState(s => ({ heroStep: (s.heroStep + 1) % 4 })); }, 2200);
+    this.togetherTimer = setInterval(() => { if (this.state.visible.together) this.setState(s => ({ togetherStep: (s.togetherStep + 1) % 6 })); }, 1300);
+    this.menuTimer = setInterval(() => { if (this.state.visible.menu) this.setState(s => ({ menuStep: (s.menuStep + 1) % 4 })); }, 1900);
+  }
+  componentWillUnmount() {
+    if (this.observer) this.observer.disconnect();
+    if (this.copyTimer) clearTimeout(this.copyTimer);
+    if (this.onMove) window.removeEventListener('mousemove', this.onMove);
+    if (this.heroTimer) clearInterval(this.heroTimer);
+    if (this.togetherTimer) clearInterval(this.togetherTimer);
+    if (this.menuTimer) clearInterval(this.menuTimer);
+    if (this.overloadRaf) cancelAnimationFrame(this.overloadRaf);
+  }
+  animateOverload() {
+    const duration = 4600; const start = performance.now();
+    const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const step = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      this.setState({ overloadProgress: ease(t) });
+      if (t < 1) this.overloadRaf = requestAnimationFrame(step);
+    };
+    this.overloadRaf = requestAnimationFrame(step);
+  }
+  stage(p, a, b) { if (b === a) return p >= b ? 1 : 0; return Math.min(1, Math.max(0, (p - a) / (b - a))); }
+
+  getRef(name) {
+    if (!this.refFns[name]) this.refFns[name] = (el) => { if (el) { this.sectionEls[name] = el; if (this.observer) this.observer.observe(el); } };
+    return this.refFns[name];
+  }
+  scrollTo(name) { const el = this.sectionEls[name]; if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  updateField(field, val) { this.setState(s => ({ waitlist: { ...s.waitlist, [field]: val } })); }
+  submitWaitlist(e) { e.preventDefault(); if (!this.state.waitlist.email) return; this.setState({ submitted: true }); }
+  copyInvite() {
+    try { navigator.clipboard.writeText('hoppr.app/invite/yourcode'); } catch (err) {}
+    this.setState({ copied: true });
+    if (this.copyTimer) clearTimeout(this.copyTimer);
+    this.copyTimer = setTimeout(() => this.setState({ copied: false }), 1800);
+  }
+  revealStyle(name, extra) {
+    const shown = !!this.state.visible[name];
+    return Object.assign({ opacity: shown ? 1 : 0, transform: shown ? 'translateY(0) scale(1)' : 'translateY(28px) scale(.98)', transition: 'opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1)' }, extra || {});
+  }
+
+  renderVals() {
+    const motionIntensity = this.props.motionIntensity ?? 'full';
+    const mascotOn = this.props.mascotEnabled ?? true;
+    const active = this.state.active;
+    const idx = this.sectionOrder.indexOf(active);
+    const topMap = { learn: '16vh', overload: '16vh', menu: '16vh', together: '16vh', marquee: '18vh', waitlist: '10vh' };
+    const onRight = idx % 2 === 0;
+    const bubbleText = { learn: 'the more you hop\u2026', overload: 'yeah, that\u2019s too many.', menu: 'i\u2019d get this.', together: 'finally.', marquee: 'relatable, right?', waitlist: 'see you soon?' }[active] || '';
+    const showScrollMascot = mascotOn && active !== 'hero';
+    const scrollMascotStyle = {
+      position: 'fixed', zIndex: 40, width: '46px', height: '46px', top: topMap[active] || '20vh',
+      right: onRight ? '5%' : 'auto', left: onRight ? 'auto' : '5%', display: showScrollMascot ? 'block' : 'none', pointerEvents: 'none',
+      filter: 'drop-shadow(0 8px 12px rgba(20,17,13,.18))',
+      transition: 'top .6s cubic-bezier(.34,1.56,.64,1), left .6s cubic-bezier(.34,1.56,.64,1), right .6s cubic-bezier(.34,1.56,.64,1)',
+      animation: 'hopIdle 1.8s ease-in-out infinite'
+    };
+    const scrollBubbleStyle = {
+      position: 'fixed', zIndex: 41, top: topMap[active] || '20vh',
+      right: onRight ? 'calc(5% + 50px)' : 'auto', left: onRight ? 'auto' : 'calc(5% + 50px)',
+      display: showScrollMascot && bubbleText ? 'block' : 'none',
+      background: '#14110d', color: '#f7f2e8', borderRadius: '12px 12px 12px 4px', padding: '7px 12px',
+      font: "500 12px/1 'DM Sans',sans-serif", whiteSpace: 'nowrap', pointerEvents: 'none'
+    };
+    const navStyle = {
+      position: 'sticky', top: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 6vw',
+      background: active === 'hero' ? 'transparent' : 'rgba(247,242,232,.92)', backdropFilter: active === 'hero' ? 'none' : 'blur(6px)',
+      borderBottom: active === 'hero' ? '1px solid transparent' : '1px solid rgba(20,17,13,.08)', transition: 'background .3s, border-color .3s'
+    };
+    const cursorStyle = {
+      position: 'fixed', zIndex: 60, width: '22px', height: '22px', borderRadius: '50%', border: '1.5px solid #c8431c',
+      left: this.state.mouse.x - 11, top: this.state.mouse.y - 11, pointerEvents: 'none',
+      opacity: this.state.mouseActive && motionIntensity !== 'subtle' ? 0.55 : 0, transition: 'opacity .3s, transform .12s ease-out', mixBlendMode: 'multiply'
+    };
+    const phoneBase = { width: '190px', height: '340px', borderRadius: '30px', background: '#fffdf8', border: '6px solid #14110d', boxShadow: '0 24px 50px rgba(20,17,13,.2)', overflow: 'hidden' };
+    const phoneOnboardStyle = Object.assign({}, phoneBase, { transform: 'rotate(-5deg) translateY(6px)', animation: 'cardIn .7s cubic-bezier(.34,1.56,.64,1) .3s both', '--r': '-5deg' });
+    const phoneResultStyle = Object.assign({}, phoneBase, { transform: 'rotate(4deg)', animation: 'cardIn .7s cubic-bezier(.34,1.56,.64,1) .55s both', '--r': '4deg' });
+    const hs = this.state.heroStep;
+    const heroOptions = [{ label: 'something cozy', on: hs >= 1 }, { label: 'somewhere new', on: false }, { label: 'quick bite', on: false }].map(o => ({
+      label: o.label,
+      style: { background: o.on ? '#c8431c' : '#f7f2e8', color: o.on ? '#f7f2e8' : '#14110d', borderRadius: '100px', padding: '10px 14px', font: "500 12px/1 'DM Sans',sans-serif", transform: o.on && hs === 1 ? 'scale(.96)' : 'scale(1)', transition: 'background .3s, color .3s, transform .2s' }
+    }));
+    const heroMascotStyle = { position: 'absolute', bottom: '30px', left: hs >= 2 ? '80%' : '10%', width: '30px', height: '30px', opacity: (hs === 2 || hs === 3) ? 1 : 0, transition: 'left .9s cubic-bezier(.34,1.56,.64,1), opacity .3s', zIndex: 5, filter: 'drop-shadow(0 6px 10px rgba(20,17,13,.25))' };
+    const heroResultStyle = { opacity: hs >= 3 ? 1 : 0, transform: hs >= 3 ? 'translateY(0)' : 'translateY(14px)', transition: 'opacity .5s, transform .5s', padding: '22px 18px', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' };
+
+    return {
+      navStyle, scrollMascotStyle, scrollBubbleStyle, scrollBubbleText: bubbleText, cursorStyle, phoneOnboardStyle, phoneResultStyle,
+      heroOptions, heroMascotStyle, heroResultStyle,
+      goLearn: () => this.scrollTo('learn'), goTogether: () => this.scrollTo('together'), goWaitlist: () => this.scrollTo('waitlist'),
+      refHero: this.getRef('hero'), refLearn: this.getRef('learn'), refOverload: this.getRef('overload'),
+      refMenu: this.getRef('menu'), refTogether: this.getRef('together'), refTry: this.getRef('try'), refMarquee: this.getRef('marquee'), refWaitlist: this.getRef('waitlist'),
+      learnPanelStyle: this.revealStyle('learn', { position: 'relative', maxWidth: '1160px', margin: '60px auto 0', padding: '54px 6vw', boxSizing: 'border-box', background: '#efe8da', borderRadius: '32px', display: 'flex', gap: '56px', flexWrap: 'wrap', alignItems: 'flex-start' }),
+      tasteChips: this.getTasteChips(), noiseNames: this.getNoiseNames(),
+      dragCards: this.getDragCards(), swipeLabelStyle: this.getSwipeLabelStyle(), swipeLabelText: this.state.dragX > 40 ? 'LIKE' : (this.state.dragX < -40 ? 'PASS' : ''),
+      overloadStyles: this.getOverloadStyles(),
+      menuPanelStyle: this.revealStyle('menu', { position: 'relative', background: '#efe8da', borderRadius: '32px', padding: '54px 6vw', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }),
+      phoneMenuStyle: { width: '230px', height: '320px', margin: '0 auto', borderRadius: '26px', background: '#fffdf8', border: '5px solid #14110d', boxShadow: '0 20px 40px rgba(20,17,13,.18)', overflow: 'hidden', position: 'relative' },
+      menuItems: this.getMenuItems(), scanLineStyle: this.getScanLineStyle(), menuResultStyle: this.getMenuResultStyle(),
+      togetherVotes: this.getTogetherVotes(), togetherStampStyle: this.getTogetherStampStyle(), togetherCardStyle: this.getTogetherCardStyle(),
+      tryPanelStyle: this.revealStyle('try', { position: 'relative', background: '#fffdf8', border: '1px solid rgba(20,17,13,.1)', borderRadius: '32px', padding: '54px 6vw', textAlign: 'center', maxWidth: '640px', margin: '60px auto 0' }),
+      tryQ1Options: this.getTryOptions(1), tryQ2Options: this.getTryOptions(2), tryShowQ2: !!this.state.tryQ1, tryShowResult: !!(this.state.tryQ1 && this.state.tryQ2), onTryReset: () => this.setState({ tryQ1: null, tryQ2: null }),
+      marqueeRow1: this.getMarquee(false), marqueeRow2: this.getMarquee(true),
+      waitlistMascotStyle: { width: '140px', height: '140px', objectFit: 'contain', marginBottom: '-24px', animation: 'hopIdle 6s ease-in-out infinite' },
+      inputStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', background: 'rgba(255,255,255,.45)', boxSizing: 'border-box', width: '100%' },
+      waitlist: this.state.waitlist, submitted: this.state.submitted,
+      onName: (e) => this.updateField('name', e.target.value), onEmail: (e) => this.updateField('email', e.target.value),
+      onCity: (e) => this.updateField('cityZip', e.target.value), onPhone: (e) => this.updateField('phone', e.target.value),
+      onSubmit: this.submitWaitlist.bind(this), showReferralTiers: this.props.showReferralTiers ?? true,
+      copied: this.state.copied, onCopyInvite: this.copyInvite.bind(this), copyLabel: this.state.copied ? 'Copied!' : 'Copy invite link'
+    };
+  }
+  getMarquee(reversed) {
+    const texts = ['"where should we go?"', '"idc you pick"', '"anything is fine"', '"not that"', '"wait that\u2019s too far"', '"we literally went there yesterday"', '"send options"', '"what about somewhere cute?"'];
+    const arr = reversed ? texts.slice().reverse() : texts;
+    return arr.concat(arr).map(t => ({ text: t }));
+  }
+
+  getTasteChips() {
+    const shown = !!this.state.visible.learn;
+    const chips = [
+      { label: 'cozy', size: 23, arrow: '↗' }, { label: 'hidden gems', size: 21, arrow: '↗' },
+      { label: 'noodles', size: 16 }, { label: 'casual', size: 16 },
+      { label: 'patios', size: 14 }, { label: 'spicy', size: 14, arrow: '↗' },
+      { label: 'date-night', size: 13 }, { label: 'late-night', size: 13, arrow: '↘' }
+    ];
+    return chips.map((c, i) => ({
+      label: c.label + (c.arrow ? ' ' + c.arrow : ''),
+      style: {
+        display: 'inline-block', font: '500 ' + c.size + "px/1 'DM Sans',sans-serif", padding: '9px 15px', borderRadius: '100px',
+        background: c.arrow ? 'rgba(200,67,28,.1)' : '#f7f2e8', color: c.arrow ? '#c8431c' : '#14110d',
+        transform: shown ? 'translateY(0) rotate(' + ((i % 2 === 0 ? -1 : 1) * (i % 3)) + 'deg)' : 'translateY(10px)',
+        opacity: shown ? 1 : 0, transition: 'opacity .5s, transform .5s', transitionDelay: shown ? (i * 60) + 'ms' : '0ms'
+      }
+    }));
+  }
+  getNoiseNames() {
+    const names = ['Ember & Ash', 'Kiln House', 'The Local Table', 'Salt Line', 'Wren & Rye', 'Corner Table', 'Marrow', 'Hearth Ave', 'Little Almanac', 'Foxglove', 'The Daily Press', 'Copper Kettle', 'Nine Elms', 'Perch', 'Salt & Char', 'The Amble', 'Rooted', 'Pine House', 'Anchor Point', 'Union Kettle', 'Late Bloom', 'Ferry & Fig', 'Camden Row', 'Field Notes Cafe', 'Willow Bend', 'The Quiet Fork', 'Harbor Nine', 'Copperline', 'Milk Street', 'Verandah'];
+    return names.map(label => ({ label }));
+  }
+  getOverloadStyles() {
+    const p = this.state.overloadProgress; const st = this.stage.bind(this);
+    const headlineBase = { font: "400 76px/1.05 'Instrument Serif',serif", margin: 0, letterSpacing: '-.02em' };
+    return {
+      headline1: Object.assign({}, headlineBase),
+      cloud: { opacity: 1 - st(p, 0.15, 0.45), transform: 'scale(' + (1 - st(p, 0.15, 0.45) * 0.25) + ')', transition: 'none', position: 'relative', display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', width: '100%' },
+      headline2: Object.assign({}, headlineBase, { opacity: st(p, 0.1, 0.32), transform: 'translateY(' + ((1 - st(p, 0.1, 0.32)) * 14) + 'px)' }),
+      cards: { opacity: st(p, 0.5, 0.66), position: 'absolute', left: 0, right: 0, top: 0, height: '260px', width: '260px', margin: '0 auto' },
+      card1: { opacity: 1 - st(p, 0.72, 0.9), transform: 'translateX(-' + (st(p, 0.72, 0.9) * 140) + 'px) rotate(-' + (st(p, 0.72, 0.9) * 20) + 'deg)', position: 'absolute', left: 0, right: 0, top: '30px', margin: '0 auto', width: '190px', background: '#fffdf8', border: '1px solid rgba(20,17,13,.1)', borderRadius: '16px', boxShadow: '0 14px 26px rgba(20,17,13,.12)', zIndex: 1 },
+      card2: { opacity: 1 - st(p, 0.78, 0.96), transform: 'translateX(' + (st(p, 0.78, 0.96) * 140) + 'px) rotate(' + (st(p, 0.78, 0.96) * 20) + 'deg)', position: 'absolute', left: 0, right: 0, top: '30px', margin: '0 auto', width: '190px', background: '#fffdf8', border: '1px solid rgba(20,17,13,.1)', borderRadius: '16px', boxShadow: '0 14px 26px rgba(20,17,13,.12)', zIndex: 1 },
+      card0: { transform: 'scale(' + (1 + st(p, 0.84, 1) * 0.35) + ')', position: 'absolute', left: 0, right: 0, top: '30px', margin: '0 auto', width: '200px', background: '#fffdf8', border: '1.5px solid #c8431c', borderRadius: '16px', boxShadow: '0 20px 36px rgba(20,17,13,.18)', zIndex: 2, transition: 'transform .9s cubic-bezier(.34,1.56,.64,1)' }
+    };
+  }
+  getSwipeLabelStyle() {
+    const dx = this.state.dragX;
+    const active = Math.abs(dx) > 40;
+    return { position: 'absolute', top: '14px', left: dx > 0 ? '14px' : 'auto', right: dx < 0 ? '14px' : 'auto', zIndex: 10, background: '#c8431c', color: '#f7f2e8', font: "700 12px/1 'JetBrains Mono',monospace", letterSpacing: '.08em', padding: '5px 10px', borderRadius: '6px', opacity: active ? Math.min(1, (Math.abs(dx) - 40) / 60) : 0, transform: 'rotate(' + (dx > 0 ? -8 : 8) + 'deg)' };
+  }
+  getDragCards() {
+    const base = [{ name: 'Corner Table', match: '94%' }, { name: 'Wren & Rye', match: '91%' }, { name: 'Little Almanac', match: '87%' }];
+    const order = this.state.dragOrder;
+    return order.map((origIdx, pos) => {
+      const c = base[origIdx];
+      const isTop = pos === 0;
+      const dx = isTop ? this.state.dragX : 0;
+      const rot = isTop ? dx / 14 : (origIdx % 2 === 0 ? -4 : 3);
+      return {
+        name: c.name, match: c.match,
+        onDown: isTop ? (e) => this.startDrag(e) : undefined,
+        style: {
+          position: 'absolute', left: 0, right: 0, margin: '0 auto', width: '190px', background: '#f7f2e8', borderRadius: '16px',
+          boxShadow: '0 14px 26px rgba(20,17,13,.16)', cursor: isTop ? 'grab' : 'default', userSelect: 'none', zIndex: 10 - pos,
+          top: pos * 8 + 'px',
+          transform: 'translateX(' + dx + 'px) rotate(' + rot + 'deg) scale(' + (1 - pos * 0.04) + ')',
+          transition: this.state.draggingTop && isTop ? 'none' : 'transform .35s cubic-bezier(.34,1.56,.64,1), top .35s'
+        }
+      };
+    });
+  }
+  startDrag(e) {
+    e.preventDefault();
+    const startX = e.clientX;
+    this.setState({ draggingTop: true });
+    const move = (ev) => this.setState({ dragX: ev.clientX - startX });
+    const up = () => {
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up);
+      const dx = this.state.dragX;
+      if (Math.abs(dx) > 80) {
+        this.setState({ dragX: dx > 0 ? 500 : -500, draggingTop: false });
+        setTimeout(() => this.setState(s => ({ dragOrder: [...s.dragOrder.slice(1), s.dragOrder[0]], dragX: 0 })), 250);
+      } else {
+        this.setState({ dragX: 0, draggingTop: false });
+      }
+    };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+  }
+  getMenuItems() {
+    return [{ name: 'Tonkotsu Ramen', price: '17' }, { name: 'Spicy Miso Ramen', price: '16' }, { name: 'Chicken Shoyu', price: '16' }, { name: 'Veggie Ramen', price: '15' }]
+      .map(m => ({ name: m.name, price: m.price, style: { opacity: this.state.menuStep >= 2 ? 0.25 : 1, transition: 'opacity .4s', display: 'flex', justifyContent: 'space-between', font: "400 13px/1.3 'DM Sans',sans-serif" } }));
+  }
+  getScanLineStyle() {
+    const on = this.state.menuStep === 1;
+    return { position: 'absolute', left: '10px', right: '10px', height: '2px', background: '#c8431c', boxShadow: '0 0 10px 2px rgba(200,67,28,.6)', top: on ? '92%' : '8%', opacity: on ? 1 : 0, transition: on ? 'top 1.1s linear' : 'none' };
+  }
+  getMenuResultStyle() {
+    const shown = this.state.menuStep >= 2;
+    return { position: 'absolute', inset: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '18px', boxSizing: 'border-box', opacity: shown ? 1 : 0, transform: shown ? 'translateY(0) scale(1)' : 'translateY(10px) scale(.96)', transition: 'opacity .4s, transform .4s', pointerEvents: 'none' };
+  }
+  getTogetherVotes() {
+    const step = this.state.togetherStep;
+    const people = [{ name: 'Victoria', threshold: 1 }, { name: 'Alex', threshold: 2 }, { name: 'Maya', threshold: 3 }, { name: 'Jake', threshold: 4 }];
+    return people.map((p, i) => ({
+      name: p.name, side: i % 2 === 0 ? 'end' : 'start',
+      heartStyle: { opacity: step >= p.threshold ? 1 : 0, transform: step >= p.threshold ? 'scale(1)' : 'scale(.4)', transition: 'opacity .3s, transform .3s', color: '#c8431c' }
+    }));
+  }
+  getTogetherStampStyle() {
+    const shown = this.state.togetherStep >= 4;
+    return { position: 'absolute', top: '-14px', right: '18px', background: '#c8431c', color: '#f7f2e8', font: "500 11px/1 'JetBrains Mono',monospace", letterSpacing: '.08em', textTransform: 'uppercase', padding: '7px 12px', borderRadius: '8px', opacity: shown ? 1 : 0, transform: shown ? 'rotate(-6deg) scale(1)' : 'rotate(-6deg) scale(.5)', transition: 'opacity .3s, transform .35s cubic-bezier(.34,1.56,.64,1)' };
+  }
+  getTogetherCardStyle() {
+    const shown = this.state.togetherStep >= 4;
+    return { opacity: shown ? 1 : 0.3, transform: shown ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.97)', transition: 'opacity .4s, transform .4s', maxWidth: '280px', margin: '30px auto 0', background: '#fffdf8', border: '1px solid rgba(20,17,13,.1)', borderRadius: '18px', padding: '22px', position: 'relative', textAlign: 'left' };
+  }
+  getTryOptions(q) {
+    const opts1 = ['cozy', 'cheap', 'somewhere new', 'drinks'];
+    const opts2 = ['walkable', "don't care"];
+    const list = q === 1 ? opts1 : opts2;
+    const selected = q === 1 ? this.state.tryQ1 : this.state.tryQ2;
+    return list.map(label => ({
+      label, onPick: () => this.setState(q === 1 ? { tryQ1: label } : { tryQ2: label }),
+      style: {
+        cursor: 'pointer', borderRadius: '100px', padding: '12px 18px', font: "500 14px/1 'DM Sans',sans-serif",
+        border: selected === label ? '1.5px solid #c8431c' : '1.5px solid rgba(20,17,13,.16)',
+        background: selected === label ? '#fdf1ea' : '#fffdf8', transition: 'border-color .2s, background .2s'
+      }
+    }));
+  }
+}
+</script>
+</body>
+</html>
