@@ -22,12 +22,119 @@
   @keyframes marqueeL{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
   @keyframes marqueeR{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
   @keyframes cardIn{0%{opacity:0;transform:translateY(40px) scale(.7) rotate(0deg)}60%{opacity:1;transform:translateY(-6px) scale(1.05) rotate(var(--r))}100%{opacity:1;transform:translateY(0) scale(1) rotate(var(--r))}}
+  @keyframes modalPop{0%{opacity:0;transform:translateY(36px) scale(.82) rotate(-2deg)}55%{opacity:1;transform:translateY(-10px) scale(1.035) rotate(1deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}}
+  @keyframes confettiPop{0%{opacity:0;transform:translate(0,0) scale(.2) rotate(0deg)}12%{opacity:1}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(1) rotate(var(--tr))}}
 </style>
 </helmet>
 
 <div style="background:#f7f2e8;color:#14110d;font-family:'DM Sans',sans-serif;overflow-x:clip;position:relative">
 
 <div style="{{ cursorStyle }}"></div>
+
+<sc-if value="{{ waitlistModalOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ onCloseWaitlist }}" style="{{ waitlistModalOverlayStyle }}">
+    <div onClick="{{ stopPropagation }}" style="{{ waitlistModalCardStyle }}">
+      <div onClick="{{ onCloseWaitlist }}" style="{{ waitlistModalCloseStyle }}">×</div>
+
+      <div style="flex:1;padding:48px 44px;min-width:0;box-sizing:border-box">
+        <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
+          <img src="./assets/hoppr-mark.png" alt="" style="width:60px;height:60px;object-fit:contain;margin-bottom:14px;display:block;animation:hopIdle 2.4s ease-in-out infinite">
+          <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Ann Arbor waitlist</div>
+          <h2 style="font:400 34px/1.1 'Instrument Serif',serif;margin:0 0 14px;letter-spacing:-.01em">Your next favorite place is probably nearby.</h2>
+          <p style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 22px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
+          <form onSubmit="{{ onSubmit }}" style="text-align:left">
+            <input value="{{ waitlist.company }}" onChange="{{ onCompany }}" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div>
+                <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Email</div>
+                <input value="{{ waitlist.email }}" onChange="{{ onEmail }}" placeholder="you@email.com" type="email" required style="{{ inputStyle }}">
+              </div>
+              <div>
+                <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">First name</div>
+                <input value="{{ waitlist.name }}" onChange="{{ onName }}" placeholder="Steven" style="{{ inputStyle }}">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div>
+                <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">City or ZIP</div>
+                <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" placeholder="Ann Arbor" style="{{ inputStyle }}">
+              </div>
+              <div>
+                <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Phone <span style="text-transform:none">(optional)</span></div>
+                <input value="{{ waitlist.phone }}" onChange="{{ onPhone }}" placeholder="(734) 555-0123" type="tel" autocomplete="tel" style="{{ inputStyle }}">
+              </div>
+            </div>
+            <label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 8px;cursor:pointer">
+              <input checked="{{ waitlist.smsConsent }}" onChange="{{ onSmsConsent }}" type="checkbox" style="margin:2px 0 0">
+              <span style="font:400 12px/1.45 'DM Sans',sans-serif;color:rgba(20,17,13,.65)">I agree to receive waitlist, launch, and access alerts by SMS from Hoppr.</span>
+            </label>
+            <div style="font:400 9px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.45);margin:0 0 14px">Consent is optional and isn’t required to join. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe. We’ll verify your number with a one-time code before sending alerts. See our <a href="/privacy" target="_blank">Privacy Policy</a> and <a href="/terms" target="_blank">Terms</a>.</div>
+            <sc-if value="{{ submitError }}" hint-placeholder-val="{{ false }}">
+              <div style="font:400 13px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-bottom:12px">{{ submitError }}</div>
+            </sc-if>
+            <button type="submit" disabled="{{ submitting }}" style="{{ submitButtonStyle }}">{{ submitButtonLabel }}</button>
+          </form>
+          <div style="font:400 10px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:14px">Free during beta · no spam · leave anytime</div>
+        </sc-if>
+        <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+          <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Admit one · Ann Arbor waitlist</div>
+          <div style="position:relative;display:inline-block">
+            <div style="font:400 44px/1.1 'Instrument Serif',serif;margin-bottom:10px">You're in.</div>
+            <sc-for list="{{ confettiPieces }}" as="p" hint-placeholder-count="12">
+              <div style="{{ p.style }}"></div>
+            </sc-for>
+          </div>
+          <p style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 22px">Check your inbox for your waitlist confirmation. Bring the people you always struggle to pick with.</p>
+          <sc-if value="{{ showOtpPanel }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#efe8da;border-radius:16px;padding:16px 18px;margin-bottom:18px">
+              <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8431c;margin-bottom:8px">Verify your phone</div>
+              <p style="font:400 13px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 12px">We texted a 6-digit code to {{ waitlist.phone }}. Enter it to enable SMS alerts.</p>
+              <form onSubmit="{{ onOtpSubmit }}" style="display:flex;gap:8px">
+                <input value="{{ otpCode }}" onChange="{{ onOtpCode }}" placeholder="123456" inputmode="numeric" maxlength="6" style="{{ inputStyle }}">
+                <button type="submit" disabled="{{ otpVerifying }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border:none;border-radius:14px;padding:0 18px;font:500 13px/1 'DM Sans',sans-serif;white-space:nowrap">{{ otpButtonLabel }}</button>
+              </form>
+              <sc-if value="{{ otpError }}" hint-placeholder-val="{{ false }}">
+                <div style="font:400 12px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-top:8px">{{ otpError }}</div>
+              </sc-if>
+              <div onClick="{{ onResendOtp }}" style="cursor:pointer;font:500 11px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.45);text-decoration:underline;margin-top:10px;display:inline-block">Resend code</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ otpJustVerified }}" hint-placeholder-val="{{ false }}">
+            <div style="font:400 12px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-bottom:18px">Phone verified — you're set for SMS alerts.</div>
+          </sc-if>
+          <div style="display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.5);border:1px solid rgba(20,17,13,.18);border-radius:14px;padding:10px 10px 10px 16px;margin-bottom:16px;max-width:420px">
+            <div style="flex:1;font:400 13px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.6);overflow:hidden;text-overflow:ellipsis">{{ resultReferralLink }}</div>
+            <div onClick="{{ onCopyInvite }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:10px;padding:9px 14px;font:500 12px/1 'DM Sans',sans-serif;white-space:nowrap">{{ copyLabel }}</div>
+          </div>
+          <p style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.5);margin:0;max-width:420px">Sharing helps grow the Hoppr community. First-release invitations stay in sign-up order.</p>
+        </sc-if>
+      </div>
+
+      <div style="position:relative;align-self:stretch;width:2px;background-image:repeating-linear-gradient(rgba(20,17,13,.22) 0 6px, transparent 6px 12px)">
+        <div style="position:absolute;top:-12px;left:-11px;width:22px;height:22px;border-radius:50%;background:#f7f2e8"></div>
+        <div style="position:absolute;bottom:-12px;left:-11px;width:22px;height:22px;border-radius:50%;background:#f7f2e8"></div>
+      </div>
+
+      <div style="width:210px;flex-shrink:0;background:#efe8da;padding:64px 20px 32px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;box-sizing:border-box">
+        <div style="font:500 9px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop<br>Ann Arbor, MI</div>
+        <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
+          <div style="font:400 15px/1.3 'Instrument Serif',serif;font-style:italic;color:#c8431c">Admit One</div>
+        </sc-if>
+        <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:6px">No.</div>
+            <div style="font:400 34px/1 'Instrument Serif',serif;color:#c8431c">{{ resultPosition }}</div>
+          </div>
+        </sc-if>
+        <div style="display:flex;gap:2px">
+          <sc-for list="{{ barcodeBars }}" as="b" hint-placeholder-count="9">
+            <div style="{{ b.style }}"></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
 
 <div style="{{ navStyle }}">
   <div style="display:flex;align-items:center;gap:10px">
@@ -36,7 +143,7 @@
   <div style="display:flex;align-items:center;gap:28px">
     <div onClick="{{ goLearn }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">How it works</div>
     <div onClick="{{ goTogether }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">Together</div>
-    <div onClick="{{ goWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:10px 18px;font:500 13px/1 'DM Sans',sans-serif">Join waitlist ↗</div>
+    <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:10px 18px;font:500 13px/1 'DM Sans',sans-serif">Join waitlist ↗</div>
   </div>
 </div>
 
@@ -53,7 +160,7 @@
     <h1 style="font:400 62px/1.05 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.02em">Don't know where to go? <span style="color:#c8431c;font-style:italic">good.</span></h1>
     <p style="font:400 18px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 30px;text-wrap:pretty">Tell Hoppr what you're feeling. We'll narrow down the noise and find somewhere that fits.</p>
     <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-      <div onClick="{{ goWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
+      <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
       <div style="font:400 12px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.04em">Launching first in Ann Arbor</div>
     </div>
   </div>
@@ -222,7 +329,7 @@
       <div style="font:500 11px/1 'JetBrains Mono',monospace;color:#c8431c">94% your taste</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px">
-      <div onClick="{{ goWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:15px 28px;font:500 15px/1 'DM Sans',sans-serif">Join waitlist →</div>
+      <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:15px 28px;font:500 15px/1 'DM Sans',sans-serif">Join waitlist →</div>
       <div onClick="{{ onTryReset }}" style="cursor:pointer;font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.45);text-decoration:underline">Try again</div>
     </div>
   </sc-if>
@@ -262,51 +369,7 @@
     <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop</div>
     <div style="font:500 13px/1 'JetBrains Mono',monospace;letter-spacing:.06em;color:#14110d">Ann Arbor, MI</div>
   </div>
-
-  <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
-    <div style="max-width:480px;margin:0 auto;text-align:left">
-      <div style="font:400 34px/1.15 'Instrument Serif',serif;margin-bottom:4px;text-align:center">You're in.</div>
-      <div style="font:400 12px/1 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:rgba(20,17,13,.45);margin-bottom:26px;text-align:center">#{{ resultPosition }} in Ann Arbor</div>
-      <p style="font:400 15px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.62);margin:0 0 18px;text-align:center">Check your inbox for your waitlist confirmation. Bring the people you always struggle to pick with.</p>
-      <div style="display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.5);border:1px solid rgba(20,17,13,.18);border-radius:14px;padding:10px 10px 10px 16px;margin-bottom:28px">
-        <div style="flex:1;font:400 13px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.6);overflow:hidden;text-overflow:ellipsis">{{ resultReferralLink }}</div>
-        <div onClick="{{ onCopyInvite }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:10px;padding:9px 14px;font:500 12px/1 'DM Sans',sans-serif;white-space:nowrap">{{ copyLabel }}</div>
-      </div>
-      <p style="font:400 12px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.5);margin:0;text-align:center">Sharing helps grow the Hoppr community. First-release invitations stay in sign-up order.</p>
-    </div>
-  </sc-if>
-  <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
-    <form onSubmit="{{ onSubmit }}" style="text-align:left;max-width:480px;margin:0 auto">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-        <div>
-          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Email</div>
-          <input value="{{ waitlist.email }}" onChange="{{ onEmail }}" placeholder="you@email.com" type="email" required style="{{ inputStyle }}">
-        </div>
-        <div>
-          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">First name</div>
-          <input value="{{ waitlist.name }}" onChange="{{ onName }}" placeholder="Steven" style="{{ inputStyle }}">
-        </div>
-      </div>
-      <div style="margin-bottom:18px">
-        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">City or ZIP</div>
-        <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" placeholder="Ann Arbor" style="{{ inputStyle }}">
-      </div>
-      <div style="margin-bottom:14px">
-        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Phone <span style="text-transform:none">(optional)</span></div>
-        <input value="{{ waitlist.phone }}" onChange="{{ onPhone }}" placeholder="(734) 555-0123" type="tel" autocomplete="tel" style="{{ inputStyle }}">
-      </div>
-      <label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 8px;cursor:pointer">
-        <input checked="{{ waitlist.smsConsent }}" onChange="{{ onSmsConsent }}" type="checkbox" style="margin:2px 0 0">
-        <span style="font:400 12px/1.45 'DM Sans',sans-serif;color:rgba(20,17,13,.65)">I agree to receive waitlist, launch, and access alerts by SMS from Hoppr.</span>
-      </label>
-      <div style="font:400 10px/1.45 'DM Sans',sans-serif;color:rgba(20,17,13,.45);margin:0 0 18px">Consent is optional and isn’t required to join. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe. We’ll verify your number with a one-time code before sending alerts. See our <a href="/privacy" target="_blank">Privacy Policy</a> and <a href="/terms" target="_blank">Terms</a>.</div>
-      <sc-if value="{{ submitError }}" hint-placeholder-val="{{ false }}">
-        <div style="font:400 13px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-bottom:14px;text-align:center">{{ submitError }}</div>
-      </sc-if>
-      <button type="submit" disabled="{{ submitting }}" style="{{ submitButtonStyle }}">{{ submitButtonLabel }}</button>
-    </form>
-    <div style="font:400 11px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:18px;text-align:center">Free during beta · no spam · leave anytime</div>
-  </sc-if>
+  <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;display:inline-block;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
 </div>
 
 <div style="padding:40px 6vw 30px;text-align:center;border-top:1px solid rgba(20,17,13,.08);background:#efe8da">
@@ -324,16 +387,19 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{},&quot;mascotEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;motionIntensity&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;full&quot;,&quot;tsType&quot;:&quot;'full'|'subtle'&quot;,&quot;options&quot;:[&quot;full&quot;,&quot;subtle&quot;],&quot;section&quot;:&quot;Motion&quot;},&quot;showReferralTiers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Growth&quot;}}">
-const supabaseClient = window.supabase.createClient(
-  'https://ikpumgpmkphlxumkmirf.supabase.co',
-  'sb_publishable_D74OYWNWI8t8H58OCAN1QQ_xhrLI2uh'
-);
+const SUPABASE_URL = 'https://ikpumgpmkphlxumkmirf.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_D74OYWNWI8t8H58OCAN1QQ_xhrLI2uh';
+const FUNCTIONS_URL = SUPABASE_URL + '/functions/v1';
+const FUNCTIONS_HEADERS = { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY };
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 class Component extends DCLogic {
   state = {
     visible: {}, active: 'hero', mouse: { x: -100, y: -100 }, mouseActive: false,
-    waitlist: { name: '', email: '', cityZip: '', phone: '', smsConsent: false }, submitted: false, copied: false,
+    waitlist: { name: '', email: '', cityZip: '', phone: '', smsConsent: false, company: '' }, submitted: false, copied: false,
     submitting: false, submitError: null, resultPosition: null, resultReferralCode: null,
+    phoneVerificationRequired: false, otpCode: '', otpStatus: 'idle', otpError: null,
+    waitlistModalOpen: false,
     heroStep: 0, togetherStep: 0, menuStep: 0, overloadProgress: 0,
     dragOrder: [0, 1, 2], dragX: 0, draggingTop: false,
     tryQ1: null, tryQ2: null
@@ -358,6 +424,18 @@ class Component extends DCLogic {
     Object.keys(this.sectionEls).forEach(k => this.observer.observe(this.sectionEls[k]));
     this.onMove = (e) => this.setState({ mouse: { x: e.clientX, y: e.clientY }, mouseActive: true });
     window.addEventListener('mousemove', this.onMove);
+    this.onKeyDown = (e) => { if (e.key === 'Escape' && this.state.waitlistModalOpen) this.closeWaitlist(); };
+    window.addEventListener('keydown', this.onKeyDown);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('preview') === 'confirmation') {
+      this.setState({
+        submitted: true, resultPosition: 128, resultReferralCode: 'previewcode',
+        phoneVerificationRequired: params.get('otp') === '1'
+      });
+      this.openWaitlist();
+    } else if (params.get('ref') || window.location.hash === '#waitlist') {
+      this.openWaitlist();
+    }
     this.heroTimer = setInterval(() => { if (this.state.visible.hero) this.setState(s => ({ heroStep: (s.heroStep + 1) % 4 })); }, 2200);
     this.togetherTimer = setInterval(() => { if (this.state.visible.together) this.setState(s => ({ togetherStep: (s.togetherStep + 1) % 6 })); }, 1300);
     this.menuTimer = setInterval(() => { if (this.state.visible.menu) this.setState(s => ({ menuStep: (s.menuStep + 1) % 4 })); }, 1900);
@@ -366,6 +444,7 @@ class Component extends DCLogic {
     if (this.observer) this.observer.disconnect();
     if (this.copyTimer) clearTimeout(this.copyTimer);
     if (this.onMove) window.removeEventListener('mousemove', this.onMove);
+    if (this.onKeyDown) window.removeEventListener('keydown', this.onKeyDown);
     if (this.heroTimer) clearInterval(this.heroTimer);
     if (this.togetherTimer) clearInterval(this.togetherTimer);
     if (this.menuTimer) clearInterval(this.menuTimer);
@@ -388,10 +467,39 @@ class Component extends DCLogic {
     return this.refFns[name];
   }
   scrollTo(name) { const el = this.sectionEls[name]; if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  openWaitlist() { document.body.style.overflow = 'hidden'; this.setState({ waitlistModalOpen: true }); }
+  closeWaitlist() { document.body.style.overflow = ''; this.setState({ waitlistModalOpen: false }); }
   updateField(field, val) { this.setState(s => ({ waitlist: { ...s.waitlist, [field]: val } })); }
+  getConfettiPieces() {
+    const colors = ['#c8431c', '#14110d', 'rgba(200,67,28,.55)'];
+    return Array.from({ length: 12 }).map((_, i) => {
+      const angle = (i / 12) * Math.PI * 2 + (i % 2 ? 0.2 : -0.15);
+      const dist = 70 + (i % 3) * 26;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist - 10;
+      const isStrip = i % 3 === 0;
+      return {
+        style: {
+          position: 'absolute', left: '10%', top: '6px', width: isStrip ? '5px' : '7px', height: isStrip ? '13px' : '7px',
+          borderRadius: isStrip ? '2px' : '50%', background: colors[i % colors.length], pointerEvents: 'none',
+          '--tx': tx.toFixed(0) + 'px', '--ty': ty.toFixed(0) + 'px', '--tr': (i % 2 ? 220 : -220) + 'deg',
+          animation: 'confettiPop .9s cubic-bezier(.16,1,.3,1) ' + (i * 0.02).toFixed(2) + 's both'
+        }
+      };
+    });
+  }
+  getBarcodeBars() {
+    const widths = [2, 1, 3, 1, 1, 2, 3, 1, 2, 1, 1, 3, 2, 1, 2, 3, 1, 1, 2];
+    return widths.map((w) => ({ style: { width: w + 'px', height: '32px', background: '#14110d', opacity: 0.75 } }));
+  }
   async submitWaitlist(e) {
     e.preventDefault();
     if (!this.state.waitlist.email || this.state.submitting) return;
+    if (this.state.waitlist.company) {
+      // Honeypot tripped: pretend to succeed without hitting the backend.
+      this.setState({ submitting: false, submitted: true, resultPosition: null, resultReferralCode: null });
+      return;
+    }
     this.setState({ submitting: true, submitError: null });
     const referredByCode = new URLSearchParams(window.location.search).get('ref') || null;
     try {
@@ -407,11 +515,16 @@ class Component extends DCLogic {
       const row = Array.isArray(data) ? data[0] : data;
       this.setState({
         submitting: false, submitted: true,
-        resultPosition: row.position, resultReferralCode: row.referral_code
+        resultPosition: row.position, resultReferralCode: row.referral_code,
+        phoneVerificationRequired: !!row.phone_verification_required
       });
+      if (row.phone_verification_required) this.sendOtp();
     } catch (err) {
-      const msg = (err && err.message || '').includes('email_already_registered')
+      const message = (err && err.message) || '';
+      const msg = message.includes('already_registered')
         ? "You're already on the list — check your inbox for your invite link."
+        : message.includes('rate_limited')
+        ? "Too many attempts from your network. Please try again in a bit."
         : "Something went wrong. Please try again in a moment.";
       this.setState({ submitting: false, submitError: msg });
     }
@@ -421,6 +534,37 @@ class Component extends DCLogic {
     this.setState({ copied: true });
     if (this.copyTimer) clearTimeout(this.copyTimer);
     this.copyTimer = setTimeout(() => this.setState({ copied: false }), 1800);
+  }
+  async sendOtp() {
+    this.setState({ otpStatus: 'sending', otpError: null });
+    try {
+      await fetch(FUNCTIONS_URL + '/send-otp', {
+        method: 'POST', headers: FUNCTIONS_HEADERS,
+        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.state.waitlist.phone })
+      });
+      this.setState({ otpStatus: 'sent' });
+    } catch (err) {
+      this.setState({ otpStatus: 'error', otpError: 'Could not send a code. Try again in a moment.' });
+    }
+  }
+  async verifyOtp(e) {
+    e.preventDefault();
+    if (!this.state.otpCode || this.state.otpStatus === 'verifying') return;
+    this.setState({ otpStatus: 'verifying', otpError: null });
+    try {
+      const res = await fetch(FUNCTIONS_URL + '/verify-otp', {
+        method: 'POST', headers: FUNCTIONS_HEADERS,
+        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.state.waitlist.phone, code: this.state.otpCode })
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.ok) {
+        this.setState({ otpStatus: 'verified', phoneVerificationRequired: false });
+      } else {
+        this.setState({ otpStatus: 'sent', otpError: 'That code didn’t work. Check it and try again.' });
+      }
+    } catch (err) {
+      this.setState({ otpStatus: 'sent', otpError: 'Something went wrong. Try again.' });
+    }
   }
   revealStyle(name, extra) {
     const shown = !!this.state.visible[name];
@@ -474,7 +618,27 @@ class Component extends DCLogic {
     return {
       navStyle, scrollMascotStyle, scrollBubbleStyle, scrollBubbleText: bubbleText, cursorStyle, phoneOnboardStyle, phoneResultStyle,
       heroOptions, heroMascotStyle, heroResultStyle,
-      goLearn: () => this.scrollTo('learn'), goTogether: () => this.scrollTo('together'), goWaitlist: () => this.scrollTo('waitlist'),
+      goLearn: () => this.scrollTo('learn'), goTogether: () => this.scrollTo('together'),
+      waitlistModalOpen: this.state.waitlistModalOpen,
+      onOpenWaitlist: this.openWaitlist.bind(this), onCloseWaitlist: this.closeWaitlist.bind(this),
+      stopPropagation: (e) => e.stopPropagation(),
+      waitlistModalOverlayStyle: {
+        position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(20,17,13,.55)', backdropFilter: 'blur(3px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', boxSizing: 'border-box',
+        animation: 'bubbleIn .25s ease-out both'
+      },
+      waitlistModalCardStyle: {
+        position: 'relative', background: '#fffefb', borderRadius: '32px', padding: '0',
+        maxWidth: '1040px', width: '100%', maxHeight: '92vh', overflowX: 'hidden', overflowY: 'auto', boxSizing: 'border-box',
+        boxShadow: '0 40px 80px rgba(20,17,13,.35)', animation: 'modalPop .5s cubic-bezier(.34,1.56,.64,1) both',
+        display: 'flex', alignItems: 'stretch'
+      },
+      waitlistModalCloseStyle: {
+        position: 'absolute', top: '22px', right: '22px', cursor: 'pointer', width: '36px', height: '36px',
+        borderRadius: '50%', background: '#efe8da', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        font: "400 22px/1 'DM Sans',sans-serif", color: 'rgba(20,17,13,.6)', zIndex: 5
+      },
+      confettiPieces: this.getConfettiPieces(), barcodeBars: this.getBarcodeBars(),
       refHero: this.getRef('hero'), refLearn: this.getRef('learn'), refOverload: this.getRef('overload'),
       refMenu: this.getRef('menu'), refTogether: this.getRef('together'), refTry: this.getRef('try'), refMarquee: this.getRef('marquee'), refWaitlist: this.getRef('waitlist'),
       learnPanelStyle: this.revealStyle('learn', { position: 'relative', maxWidth: '1160px', margin: '60px auto 0', padding: '54px 6vw', boxSizing: 'border-box', background: '#efe8da', borderRadius: '32px', display: 'flex', gap: '56px', flexWrap: 'wrap', alignItems: 'flex-start' }),
@@ -494,13 +658,21 @@ class Component extends DCLogic {
       onName: (e) => this.updateField('name', e.target.value), onEmail: (e) => this.updateField('email', e.target.value),
       onCity: (e) => this.updateField('cityZip', e.target.value), onPhone: (e) => this.updateField('phone', e.target.value),
       onSmsConsent: (e) => this.updateField('smsConsent', e.target.checked),
+      onCompany: (e) => this.updateField('company', e.target.value),
       onSubmit: this.submitWaitlist.bind(this), showReferralTiers: this.props.showReferralTiers ?? true,
       copied: this.state.copied, onCopyInvite: this.copyInvite.bind(this), copyLabel: this.state.copied ? 'Copied!' : 'Copy invite link',
       submitting: this.state.submitting, submitError: this.state.submitError,
       submitButtonLabel: this.state.submitting ? 'Joining…' : 'Join waitlist →',
       submitButtonStyle: { width: '100%', cursor: 'pointer', background: '#c8431c', color: '#f7f2e8', border: 'none', borderRadius: '100px', padding: '17px', font: "500 16px/1 'DM Sans',sans-serif", opacity: this.state.submitting ? 0.6 : 1 },
       resultPosition: this.state.resultPosition,
-      resultReferralLink: 'hoppr.app/v/' + (this.state.resultReferralCode || '')
+      resultReferralLink: 'hoppr.app/v/' + (this.state.resultReferralCode || ''),
+      showOtpPanel: this.state.phoneVerificationRequired && this.state.otpStatus !== 'verified',
+      otpJustVerified: this.state.otpStatus === 'verified',
+      otpCode: this.state.otpCode, onOtpCode: (e) => this.setState({ otpCode: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      onOtpSubmit: this.verifyOtp.bind(this), onResendOtp: this.sendOtp.bind(this),
+      otpVerifying: this.state.otpStatus === 'verifying',
+      otpButtonLabel: this.state.otpStatus === 'verifying' ? 'Checking…' : 'Verify',
+      otpError: this.state.otpError
     };
   }
   getMarquee(reversed) {

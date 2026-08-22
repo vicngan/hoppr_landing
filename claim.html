@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claim your Hoppr spot</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f7f2e8;color:#14110d;font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:24px}
+  .card{max-width:420px;width:100%;text-align:center;background:#fffdf8;border:1px solid rgba(20,17,13,.1);border-radius:24px;padding:44px 32px}
+  h1{font:400 34px/1.1 'Instrument Serif',serif;margin:0 0 12px;letter-spacing:-.01em}
+  p{font:400 15px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 26px}
+  a.cta{display:inline-block;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:15px 30px;font:500 15px/1 'DM Sans',sans-serif;text-decoration:none}
+  .spinner{width:22px;height:22px;border-radius:50%;border:2px solid rgba(20,17,13,.15);border-top-color:#c8431c;margin:0 auto 20px;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="spinner"></div>
+  <h1>Claiming your spot…</h1>
+  <p>One second while we confirm your invite.</p>
+</div>
+<script>
+(async function () {
+  const supabaseClient = window.supabase.createClient(
+    'https://ikpumgpmkphlxumkmirf.supabase.co',
+    'sb_publishable_D74OYWNWI8t8H58OCAN1QQ_xhrLI2uh'
+  );
+  const card = document.getElementById('card');
+  const token = new URLSearchParams(window.location.search).get('token');
+  function render(title, body, ctaHref, ctaLabel) {
+    card.innerHTML = '<h1></h1><p></p>' + (ctaHref ? '<a class="cta" href=""></a>' : '');
+    card.querySelector('h1').textContent = title;
+    card.querySelector('p').textContent = body;
+    if (ctaHref) {
+      const cta = card.querySelector('a.cta');
+      cta.href = ctaHref;
+      cta.textContent = ctaLabel;
+    }
+  }
+  if (!token) {
+    render('Missing invite token', 'This link is missing its invite code. Check the link in your email or text.');
+    return;
+  }
+  try {
+    const { data, error } = await supabaseClient.rpc('claim_waitlist_invite', { p_token: token });
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    const destination = (row && row.destination) || 'https://hoppr.app';
+    render('You’re in!', 'Your Hoppr spot is claimed. Tap below to open the app.', destination, 'Open Hoppr →');
+    setTimeout(() => { window.location.href = destination; }, 1200);
+  } catch (err) {
+    render('This link has expired', 'Invite links are valid for 7 days. Rejoin the waitlist and we’ll let you know when your next spot opens.', './index.html#waitlist', 'Back to Hoppr');
+  }
+})();
+</script>
+</body>
+</html>

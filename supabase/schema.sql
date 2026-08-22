@@ -123,10 +123,17 @@ create trigger trg_waitlist_touch before update on waitlist for each row execute
 drop trigger if exists trg_waitlist_bump_referral on waitlist;
 create trigger trg_waitlist_bump_referral after insert on waitlist for each row execute function waitlist_bump_referral_count();
 
+create table if not exists waitlist_rate_limit (
+  ip_hash text primary key,
+  window_start timestamptz not null,
+  count integer not null default 0
+);
+
 alter table waitlist enable row level security;
 alter table waitlist_notifications enable row level security;
 alter table phone_verification_codes enable row level security;
 alter table waitlist_audit_log enable row level security;
+alter table waitlist_rate_limit enable row level security;
 
 -- Normalizes and validates browser input. A phone is only retained if explicit
 -- consent was supplied; verification is a separate server-side operation.
@@ -144,7 +151,35 @@ declare
   v_phone text := null;
   v_referrer_id uuid;
   v_id uuid;
+  v_ip text;
+  v_ip_hash text;
+  v_count int;
+  v_headers json;
+  v_xff_parts text[];
 begin
+  begin
+    v_headers := current_setting('request.headers', true)::json;
+    -- x-forwarded-for is attacker-controllable at the client hop (each proxy
+    -- appends, it doesn't overwrite), so the trustworthy value is whichever
+    -- entry Supabase's own edge network added: cf-connecting-ip when present,
+    -- otherwise the *last* x-forwarded-for entry, never the first.
+    v_ip := coalesce(v_headers->>'cf-connecting-ip', v_headers->>'x-real-ip');
+    if v_ip is null then
+      v_xff_parts := string_to_array(coalesce(v_headers->>'x-forwarded-for', ''), ',');
+      if array_length(v_xff_parts, 1) > 0 then
+        v_ip := trim(v_xff_parts[array_length(v_xff_parts, 1)]);
+      end if;
+    end if;
+  exception when others then v_ip := null; end;
+  if coalesce(trim(v_ip), '') <> '' then
+    v_ip_hash := encode(digest(trim(v_ip), 'sha256'), 'hex');
+    insert into waitlist_rate_limit (ip_hash, window_start, count) values (v_ip_hash, now(), 1)
+      on conflict (ip_hash) do update set
+        count = case when waitlist_rate_limit.window_start < now() - interval '1 hour' then 1 else waitlist_rate_limit.count + 1 end,
+        window_start = case when waitlist_rate_limit.window_start < now() - interval '1 hour' then now() else waitlist_rate_limit.window_start end
+      returning count into v_count;
+    if v_count > 5 then raise exception 'rate_limited'; end if;
+  end if;
   if v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' or length(v_email) > 254 then
     raise exception 'invalid_request';
   end if;
@@ -211,6 +246,9 @@ begin
   return query select coalesce(v_url, 'https://hoppr.app');
 end; $$;
 
-revoke all on table waitlist, waitlist_notifications, phone_verification_codes, waitlist_audit_log from anon, authenticated;
+revoke all on table waitlist, waitlist_notifications, phone_verification_codes, waitlist_audit_log, waitlist_rate_limit from anon, authenticated;
 revoke all on function release_waitlist_batch(text, integer), claim_waitlist_invite(text) from public, anon, authenticated;
 grant execute on function join_waitlist(text, text, text, text, text, boolean) to anon;
+-- Safe to expose: the token itself (32 random bytes, hashed at rest, single-use,
+-- deadline-bound) is the credential, the same trust model as a password-reset link.
+grant execute on function claim_waitlist_invite(text) to anon;
