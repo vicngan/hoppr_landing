@@ -144,8 +144,9 @@ create or replace function join_waitlist(
   p_referred_by_code text default null,
   p_phone text default null,
   p_sms_consent boolean default false
-) returns table("position" bigint, cohort text, referral_code text, phone_verification_required boolean)
+) returns table(id uuid, "position" bigint, cohort text, referral_code text, phone_verification_required boolean)
 language plpgsql security definer set search_path = public, extensions as $$
+#variable_conflict use_column
 declare
   v_email text := lower(trim(coalesce(p_email, '')));
   v_phone text := null;
@@ -192,7 +193,7 @@ begin
   end if;
   if p_sms_consent and v_phone is null then raise exception 'invalid_request'; end if;
   if p_referred_by_code is not null then
-    select id into v_referrer_id from waitlist where referral_code = lower(trim(p_referred_by_code));
+    select w.id into v_referrer_id from waitlist w where w.referral_code = lower(trim(p_referred_by_code));
   end if;
   insert into waitlist (email, first_name, city_or_zip, phone_e164, sms_consent, sms_consent_at, referred_by)
   values (v_email, nullif(trim(p_first_name), ''), nullif(trim(p_city_or_zip), ''),
@@ -200,7 +201,7 @@ begin
     case when p_sms_consent then now() else null end, v_referrer_id)
   returning id into v_id;
   insert into waitlist_audit_log (waitlist_id, event_type, details) values (v_id, 'joined', jsonb_build_object('cohort', 'ann-arbor'));
-  return query select w.waitlist_position, w.cohort, w.referral_code, (w.sms_consent and w.phone_e164 is not null) from waitlist w where w.id = v_id;
+  return query select w.id, w.waitlist_position, w.cohort, w.referral_code, (w.sms_consent and w.phone_e164 is not null) from waitlist w where w.id = v_id;
 exception when unique_violation then
   -- Deliberately non-enumerating: the browser presents one generic response.
   raise exception 'already_registered';

@@ -518,6 +518,13 @@ class Component extends DCLogic {
         resultPosition: row.position, resultReferralCode: row.referral_code,
         phoneVerificationRequired: !!row.phone_verification_required
       });
+      fetch(FUNCTIONS_URL + '/send-confirmation', {
+        method: 'POST', headers: FUNCTIONS_HEADERS,
+        body: JSON.stringify({ record: {
+          id: row.id, email: this.state.waitlist.email,
+          first_name: this.state.waitlist.name || null, referral_code: row.referral_code
+        } })
+      }).catch(() => {});
       if (row.phone_verification_required) this.sendOtp();
     } catch (err) {
       const message = (err && err.message) || '';
