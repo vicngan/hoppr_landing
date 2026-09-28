@@ -556,6 +556,7 @@ class Component extends DCLogic {
     }
     this.setState({ submitting: true, submitError: null });
     const referredByCode = (this.state.waitlist.referralCode || '').trim() || null;
+    let row;
     try {
       const { data, error } = await supabaseClient.rpc('join_waitlist', {
         p_email: this.state.waitlist.email,
@@ -566,21 +567,9 @@ class Component extends DCLogic {
         p_sms_consent: false
       });
       if (error) throw error;
-      const row = Array.isArray(data) ? data[0] : data;
-      this.setState({
-        submitting: false, submitted: true,
-        resultPosition: row.position, resultReferralCode: row.referral_code,
-        phoneVerificationRequired: !!row.phone_verification_required
-      });
-      fetch(FUNCTIONS_URL + '/send-confirmation', {
-        method: 'POST', headers: FUNCTIONS_HEADERS,
-        body: JSON.stringify({ record: {
-          id: row.id, email: this.state.waitlist.email,
-          first_name: this.state.waitlist.name || null, referral_code: row.referral_code
-        } })
-      }).catch(() => {});
-      if (row.phone_verification_required) this.sendOtp();
+      row = Array.isArray(data) ? data[0] : data;
     } catch (err) {
+      console.error('join_waitlist failed', err);
       const message = (err && err.message) || '';
       const msg = message.includes('already_registered')
         ? "You're already on the list — check your inbox for your invite link."
@@ -588,7 +577,29 @@ class Component extends DCLogic {
         ? "Too many attempts from your network. Please try again in a bit."
         : "Something went wrong. Please try again in a moment.";
       this.setState({ submitting: false, submitError: msg });
+      return;
     }
+    // The signup is saved at this point. Nothing below may surface a failure to the user.
+    row = row || {};
+    try {
+      this.setState({
+        submitting: false, submitted: true, submitError: null,
+        resultPosition: row.position != null ? row.position : null, resultReferralCode: row.referral_code || null,
+        phoneVerificationRequired: !!row.phone_verification_required
+      });
+    } catch (err) {
+      console.error('post-signup render failed', err);
+    }
+    if (row.id) {
+      fetch(FUNCTIONS_URL + '/send-confirmation', {
+        method: 'POST', headers: FUNCTIONS_HEADERS,
+        body: JSON.stringify({ record: {
+          id: row.id, email: this.state.waitlist.email,
+          first_name: this.state.waitlist.name || null, referral_code: row.referral_code
+        } })
+      }).catch(() => {});
+    }
+    if (row.phone_verification_required) this.sendOtp();
   }
   copyInvite() {
     try { navigator.clipboard.writeText('hopwithhoppr.com/v/' + (this.state.resultReferralCode || '')); } catch (err) {}
