@@ -15,10 +15,9 @@ picks demo, menu-picker demo, group ("together") mode, an interactive
   step or bundler involved.
 - `hoppr-lockup-v2-trimmed.png`, `hoppr-mark.png`, `hoppr-wordmark-v2-trimmed.png` —
   brand assets referenced by `index.html`.
-- `supabase/schema.sql` — waitlist/cohort/notification/audit tables, RLS, the
+- `supabase/migrations/` — waitlist/cohort/notification/audit tables, RLS, the
   `join_waitlist`, `release_waitlist_batch`, and `claim_waitlist_invite` RPCs,
-  and a per-IP rate limit on signups. Paste into the Supabase SQL Editor for a
-  new project (safe to re-run; uses `if not exists` / `or replace`).
+  and a per-IP rate limit on signups. Apply with `supabase db push`.
 - `claim.html` — the page an invitation link points to. Calls
   `claim_waitlist_invite`, then redirects to the cohort's `app_url`.
 - `supabase/functions/send-confirmation/index.ts` — Edge Function that sends
@@ -46,7 +45,7 @@ The waitlist form submits to a Supabase project via `supabase-js` (loaded
 from CDN in `index.html`, no build step needed). To run it locally end to
 end:
 
-1. Create a Supabase project, run `supabase/schema.sql` in its SQL Editor.
+1. Create a Supabase project, apply `supabase/migrations/` with `supabase db push`.
 2. In `index.html`, replace the placeholder `supabaseClient` URL/anon key
    (search for `YOUR-PROJECT-REF`) with your project's values from
    Project Settings → API. The anon key is meant to be public and is safe to
@@ -155,3 +154,11 @@ To pull future updates from the source Claude Design project, re-export
 `Hoppr Landing.dc.html` and replace `index.html` (keeping the `support.js`
 `<script>` tag and relative image paths intact).
 # hoppr_landing
+
+## Database changes
+
+Never edit the live database by hand or edit an old migration. Add a new file in
+`supabase/migrations/` and apply it with `supabase db push` **before** pushing site
+code that depends on it. Keep old function signatures working until the new site is
+live. `.github/workflows/smoke.yml` calls `join_waitlist` on every push and daily, and
+fails if the live function doesn't match what `index.html` sends.

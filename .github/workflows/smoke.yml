@@ -1,0 +1,22 @@
+name: Signup smoke check
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+jobs:
+  join-waitlist-rpc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: join_waitlist exists with the signature the site calls
+        run: |
+          # An invalid email is rejected before anything is written, so this never
+          # creates a row. "invalid_request" means the function is deployed with
+          # the parameters index.html sends; anything else means the live database
+          # and the site have drifted apart.
+          out=$(curl -s -X POST "https://ikpumgpmkphlxumkmirf.supabase.co/rest/v1/rpc/join_waitlist" \
+            -H "apikey: sb_publishable_D74OYWNWI8t8H58OCAN1QQ_xhrLI2uh" -H "Authorization: Bearer sb_publishable_D74OYWNWI8t8H58OCAN1QQ_xhrLI2uh" -H "Content-Type: application/json" \
+            -d '{"p_email":"not-an-email","p_first_name":null,"p_city_or_zip":null,"p_referred_by_code":null,"p_phone":null,"p_sms_consent":false,"p_cohort_label":null}')
+          echo "$out"
+          echo "$out" | grep -q '"message":"invalid_request"'
