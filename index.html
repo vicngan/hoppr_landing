@@ -68,14 +68,30 @@
               </div>
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Phone <span style="text-transform:none">(optional)</span></div>
-                <input value="{{ waitlist.phone }}" onChange="{{ onPhone }}" placeholder="(734) 555-0123" type="tel" autocomplete="tel" style="{{ inputStyle }}">
+                <div style="display:flex;gap:8px">
+                  <select value="{{ waitlist.phoneCountry }}" onChange="{{ onPhoneCountry }}" style="{{ countrySelectStyle }}">
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+1">🇨🇦 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+52">🇲🇽 +52</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+81">🇯🇵 +81</option>
+                    <option value="+86">🇨🇳 +86</option>
+                    <option value="+49">🇩🇪 +49</option>
+                    <option value="+33">🇫🇷 +33</option>
+                  </select>
+                  <input value="{{ waitlist.phone }}" onChange="{{ onPhone }}" placeholder="(734) 555-0123" type="tel" autocomplete="tel" style="{{ inputStyle }}">
+                </div>
               </div>
             </div>
+            <!-- SMS verification flow disabled for now; checkbox repurposed as a plain
+                 marketing opt-in and no longer sent as p_sms_consent (see submitWaitlist). -->
             <label style="display:flex;align-items:flex-start;gap:10px;margin:0 0 8px;cursor:pointer">
               <input checked="{{ waitlist.smsConsent }}" onChange="{{ onSmsConsent }}" type="checkbox" style="margin:2px 0 0">
-              <span style="font:400 12px/1.45 'DM Sans',sans-serif;color:rgba(20,17,13,.65)">I agree to receive waitlist, launch, and access alerts by SMS from Hoppr.</span>
+              <span style="font:400 12px/1.45 'DM Sans',sans-serif;color:rgba(20,17,13,.65)">Keep me posted on promotions and updates from Hoppr.</span>
             </label>
-            <div style="font:400 9px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.45);margin:0 0 28px">Consent is optional and isn’t required to join. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe. We’ll verify your number with a one-time code before sending alerts. See our <a href="/privacy" target="_blank">Privacy Policy</a> and <a href="/terms" target="_blank">Terms</a>.</div>
+            <div style="font:400 9px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.45);margin:0 0 28px">Optional, not required to join. Unsubscribe anytime. See our <a href="/privacy" target="_blank">Privacy Policy</a> and <a href="/terms" target="_blank">Terms</a>.</div>
             <sc-if value="{{ submitError }}" hint-placeholder-val="{{ false }}">
               <div style="font:400 13px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-bottom:12px">{{ submitError }}</div>
             </sc-if>
@@ -166,9 +182,9 @@
     <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:20px"> FOR WHEN “idk” IS THE PLAN </div>
     <h1 style="font:400 62px/1.05 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.02em">Don't know where to go? <span style="color:#c8431c;font-style:italic">good.</span></h1>
     <p style="font:400 18px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 30px;text-wrap:pretty">Tell Hoppr what you're feeling. We'll narrow down the noise and find somewhere that fits.</p>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:22px">
       <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
-      <div style="font:400 12px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.04em">Launching first in Ann Arbor</div>
+      <div style="font:400 12px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.04em">📍 First stop: Ann Arbor</div>
     </div>
   </div>
 
@@ -382,7 +398,7 @@
 <div style="padding:40px 6vw 30px;text-align:center;border-top:1px solid rgba(20,17,13,.08);background:#efe8da">
   <img src="./assets/hoppr-wordmark-v2-trimmed.png" alt="" style="width:120px;height:auto;object-fit:contain;margin-bottom:10px">
   <div style="font:400 16px/1.4 'Instrument Serif',serif;font-style:italic;color:rgba(20,17,13,.55);margin-bottom:16px">for people who don't know where they're going yet.</div>
-  <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.35)">made in ann arbor · 2026</div>
+  <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.35)">made with love · 2026</div>
 </div>
 
 </x-dc>
@@ -396,7 +412,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 class Component extends DCLogic {
   state = {
     visible: {}, active: 'hero', mouse: { x: -100, y: -100 }, mouseActive: false,
-    waitlist: { name: '', email: '', cityZip: 'Ann Arbor, MI', phone: '', smsConsent: false, company: '' }, submitted: false, copied: false,
+    waitlist: { name: '', email: '', cityZip: 'Ann Arbor, MI', phone: '', phoneCountry: '+1', smsConsent: false, company: '' }, submitted: false, copied: false,
     submitting: false, submitError: null, resultPosition: null, resultReferralCode: null,
     phoneVerificationRequired: false, otpCode: '', otpStatus: 'idle', otpError: null,
     waitlistModalOpen: false,
@@ -492,14 +508,15 @@ class Component extends DCLogic {
     const widths = [2, 1, 3, 1, 1, 2, 3, 1, 2, 1, 1, 3, 2, 1, 2, 3, 1, 1, 2];
     return widths.map((w) => ({ style: { width: w + 'px', height: '56px', background: '#14110d', opacity: 0.75 } }));
   }
-  normalizePhone(raw) {
+  normalizePhone(raw, dialCode) {
     const t = (raw || '').trim();
     if (!t) return null;
+    if (t.startsWith('+')) return '+' + t.replace(/\D/g, '');
     const digits = t.replace(/\D/g, '');
-    if (t.startsWith('+')) return '+' + digits;
-    if (digits.length === 10) return '+1' + digits;
-    if (digits.length === 11 && digits[0] === '1') return '+' + digits;
-    return t;
+    if (!digits) return null;
+    const cc = (dialCode || '+1').replace(/\D/g, '');
+    if (cc === '1' && digits.length === 11 && digits[0] === '1') return '+' + digits;
+    return '+' + cc + digits;
   }
   async submitWaitlist(e) {
     e.preventDefault();
@@ -517,8 +534,8 @@ class Component extends DCLogic {
         p_first_name: this.state.waitlist.name || null,
         p_city_or_zip: this.state.waitlist.cityZip || null,
         p_referred_by_code: referredByCode,
-        p_phone: this.normalizePhone(this.state.waitlist.phone),
-        p_sms_consent: !!this.state.waitlist.smsConsent
+        p_phone: this.normalizePhone(this.state.waitlist.phone, this.state.waitlist.phoneCountry),
+        p_sms_consent: false
       });
       if (error) throw error;
       const row = Array.isArray(data) ? data[0] : data;
@@ -556,7 +573,7 @@ class Component extends DCLogic {
     try {
       await fetch(FUNCTIONS_URL + '/send-otp', {
         method: 'POST', headers: FUNCTIONS_HEADERS,
-        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.normalizePhone(this.state.waitlist.phone) })
+        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.normalizePhone(this.state.waitlist.phone, this.state.waitlist.phoneCountry) })
       });
       this.setState({ otpStatus: 'sent' });
     } catch (err) {
@@ -570,7 +587,7 @@ class Component extends DCLogic {
     try {
       const res = await fetch(FUNCTIONS_URL + '/verify-otp', {
         method: 'POST', headers: FUNCTIONS_HEADERS,
-        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.normalizePhone(this.state.waitlist.phone), code: this.state.otpCode })
+        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.normalizePhone(this.state.waitlist.phone, this.state.waitlist.phoneCountry), code: this.state.otpCode })
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.ok) {
@@ -645,7 +662,7 @@ class Component extends DCLogic {
       },
       waitlistModalCardStyle: {
         position: 'relative', background: '#fffefb', borderRadius: '32px', padding: '0',
-        maxWidth: '1040px', width: '100%', maxHeight: '92vh', overflowX: 'hidden', overflowY: 'auto', boxSizing: 'border-box',
+        maxWidth: '1040px', width: '100%', maxHeight: '92vh', overflow: 'hidden', boxSizing: 'border-box',
         boxShadow: '0 40px 80px rgba(20,17,13,.35)', animation: 'modalPop .5s cubic-bezier(.34,1.56,.64,1) both',
         display: 'flex', alignItems: 'stretch'
       },
@@ -670,10 +687,12 @@ class Component extends DCLogic {
       marqueeRow1: this.getMarquee(false), marqueeRow2: this.getMarquee(true),
       waitlistMascotStyle: { width: '140px', height: '140px', objectFit: 'contain', marginBottom: '-24px', animation: 'hopIdle 6s ease-in-out infinite' },
       selectStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 40px 14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,.45)', backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2314110d' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', appearance: 'none', WebkitAppearance: 'none', boxSizing: 'border-box', width: '100%', color: '#14110d', cursor: 'pointer' },
+      countrySelectStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 30px 14px 12px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,.45)', backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2314110d' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', appearance: 'none', WebkitAppearance: 'none', boxSizing: 'border-box', width: '92px', flexShrink: 0, color: '#14110d', cursor: 'pointer' },
       inputStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', background: 'rgba(255,255,255,.45)', boxSizing: 'border-box', width: '100%' },
       waitlist: this.state.waitlist, submitted: this.state.submitted,
       onName: (e) => this.updateField('name', e.target.value), onEmail: (e) => this.updateField('email', e.target.value),
       onCity: (e) => this.updateField('cityZip', e.target.value), onPhone: (e) => this.updateField('phone', e.target.value),
+      onPhoneCountry: (e) => this.updateField('phoneCountry', e.target.value),
       onSmsConsent: (e) => this.updateField('smsConsent', e.target.checked),
       onCompany: (e) => this.updateField('company', e.target.value),
       onSubmit: this.submitWaitlist.bind(this), showReferralTiers: this.props.showReferralTiers ?? true,
