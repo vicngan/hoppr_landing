@@ -46,7 +46,7 @@
           <h2 style="font:400 34px/1.1 'Instrument Serif',serif;margin:0 0 14px;letter-spacing:-.01em">Your next favorite place is probably nearby.</h2>
           <p style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 22px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
           <form onSubmit="{{ onSubmit }}" style="text-align:left">
-            <input value="{{ waitlist.company }}" onChange="{{ onCompany }}" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <input value="{{ waitlist.company }}" onChange="{{ onCompany }}" name="website_url" type="text" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Email</div>
@@ -54,7 +54,7 @@
               </div>
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">First name</div>
-                <input value="{{ waitlist.name }}" onChange="{{ onName }}" placeholder="Steven" style="{{ inputStyle }}">
+                <input value="{{ waitlist.name }}" onChange="{{ onName }}" placeholder="your name" style="{{ inputStyle }}">
               </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
@@ -495,6 +495,15 @@ class Component extends DCLogic {
     const widths = [2, 1, 3, 1, 1, 2, 3, 1, 2, 1, 1, 3, 2, 1, 2, 3, 1, 1, 2];
     return widths.map((w) => ({ style: { width: w + 'px', height: '32px', background: '#14110d', opacity: 0.75 } }));
   }
+  normalizePhone(raw) {
+    const t = (raw || '').trim();
+    if (!t) return null;
+    const digits = t.replace(/\D/g, '');
+    if (t.startsWith('+')) return '+' + digits;
+    if (digits.length === 10) return '+1' + digits;
+    if (digits.length === 11 && digits[0] === '1') return '+' + digits;
+    return t;
+  }
   async submitWaitlist(e) {
     e.preventDefault();
     if (!this.state.waitlist.email || this.state.submitting) return;
@@ -511,7 +520,7 @@ class Component extends DCLogic {
         p_first_name: this.state.waitlist.name || null,
         p_city_or_zip: this.state.waitlist.cityZip || null,
         p_referred_by_code: referredByCode,
-        p_phone: this.state.waitlist.phone || null,
+        p_phone: this.normalizePhone(this.state.waitlist.phone),
         p_sms_consent: !!this.state.waitlist.smsConsent
       });
       if (error) throw error;
@@ -550,7 +559,7 @@ class Component extends DCLogic {
     try {
       await fetch(FUNCTIONS_URL + '/send-otp', {
         method: 'POST', headers: FUNCTIONS_HEADERS,
-        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.state.waitlist.phone })
+        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.normalizePhone(this.state.waitlist.phone) })
       });
       this.setState({ otpStatus: 'sent' });
     } catch (err) {
@@ -564,7 +573,7 @@ class Component extends DCLogic {
     try {
       const res = await fetch(FUNCTIONS_URL + '/verify-otp', {
         method: 'POST', headers: FUNCTIONS_HEADERS,
-        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.state.waitlist.phone, code: this.state.otpCode })
+        body: JSON.stringify({ email: this.state.waitlist.email, phone: this.normalizePhone(this.state.waitlist.phone), code: this.state.otpCode })
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok && body.ok) {
