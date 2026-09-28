@@ -137,13 +137,15 @@ alter table waitlist_rate_limit enable row level security;
 
 -- Normalizes and validates browser input. A phone is only retained if explicit
 -- consent was supplied; verification is a separate server-side operation.
+drop function if exists join_waitlist(text, text, text, text, text, boolean);
 create or replace function join_waitlist(
   p_email text,
   p_first_name text default null,
   p_city_or_zip text default null,
   p_referred_by_code text default null,
   p_phone text default null,
-  p_sms_consent boolean default false
+  p_sms_consent boolean default false,
+  p_cohort_label text default null
 ) returns table(id uuid, "position" bigint, cohort text, referral_code text, phone_verification_required boolean)
 language plpgsql security definer set search_path = public, extensions as $$
 #variable_conflict use_column
@@ -157,6 +159,8 @@ declare
   v_count int;
   v_headers json;
   v_xff_parts text[];
+  v_cohort text := 'ann-arbor';
+  v_label text := nullif(trim(coalesce(p_cohort_label, '')), '');
 begin
   begin
     v_headers := current_setting('request.headers', true)::json;
@@ -195,12 +199,23 @@ begin
   if p_referred_by_code is not null then
     select w.id into v_referrer_id from waitlist w where w.referral_code = lower(trim(p_referred_by_code));
   end if;
-  insert into waitlist (email, first_name, city_or_zip, phone_e164, sms_consent, sms_consent_at, referred_by)
+  -- The place the user picked from the city search becomes their cohort. Unknown
+  -- places get a new cohort row (closed until an admin opens it).
+  if v_label is not null then
+    if length(v_label) > 100 then raise exception 'invalid_request'; end if;
+    v_cohort := trim(both '-' from regexp_replace(lower(v_label), '[^a-z0-9]+', '-', 'g'));
+    if v_cohort = '' then raise exception 'invalid_request'; end if;
+    -- Cohort that existed before the city search.
+    if v_cohort like 'ann-arbor-michigan%' then v_cohort := 'ann-arbor'; end if;
+    insert into cohorts (slug, display_name, is_open) values (v_cohort, v_label, false)
+      on conflict (slug) do nothing;
+  end if;
+  insert into waitlist (email, first_name, city_or_zip, phone_e164, sms_consent, sms_consent_at, referred_by, cohort)
   values (v_email, nullif(trim(p_first_name), ''), nullif(trim(p_city_or_zip), ''),
     case when p_sms_consent then v_phone else null end, p_sms_consent,
-    case when p_sms_consent then now() else null end, v_referrer_id)
+    case when p_sms_consent then now() else null end, v_referrer_id, v_cohort)
   returning id into v_id;
-  insert into waitlist_audit_log (waitlist_id, event_type, details) values (v_id, 'joined', jsonb_build_object('cohort', 'ann-arbor'));
+  insert into waitlist_audit_log (waitlist_id, event_type, details) values (v_id, 'joined', jsonb_build_object('cohort', v_cohort));
   return query select w.id, w.waitlist_position, w.cohort, w.referral_code, (w.sms_consent and w.phone_e164 is not null) from waitlist w where w.id = v_id;
 exception when unique_violation then
   -- Deliberately non-enumerating: the browser presents one generic response.
@@ -249,7 +264,7 @@ end; $$;
 
 revoke all on table waitlist, waitlist_notifications, phone_verification_codes, waitlist_audit_log, waitlist_rate_limit from anon, authenticated;
 revoke all on function release_waitlist_batch(text, integer), claim_waitlist_invite(text) from public, anon, authenticated;
-grant execute on function join_waitlist(text, text, text, text, text, boolean) to anon;
+grant execute on function join_waitlist(text, text, text, text, text, boolean, text) to anon;
 -- Safe to expose: the token itself (32 random bytes, hashed at rest, single-use,
 -- deadline-bound) is the credential, the same trust model as a password-reset link.
 grant execute on function claim_waitlist_invite(text) to anon;

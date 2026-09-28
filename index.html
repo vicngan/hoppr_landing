@@ -89,13 +89,16 @@
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Location</div>
                 <div style="position:relative">
-                  <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" onFocus="{{ onCityFocus }}" onBlur="{{ onCityBlur }}" placeholder="your city, e.g. Ann Arbor" autocomplete="off" required style="{{ inputStyle }}">
+                  <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" onFocus="{{ onCityFocus }}" onBlur="{{ onCityBlur }}" name="hoppr-place-search" role="combobox" aria-autocomplete="list" aria-label="Search for a place" placeholder="Search e.g. Ann Arbor" autocomplete="new-password" data-lpignore="true" data-1p-ignore spellcheck="false" required style="{{ inputStyle }}">
                   <sc-if value="{{ showCitySuggestions }}" hint-placeholder-val="{{ false }}">
-                    <div style="position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;background:#f7f2e8;border:1px solid rgba(20,17,13,.18);border-radius:14px;box-shadow:0 10px 30px rgba(20,17,13,.15);overflow:hidden;text-align:left">
+                    <div style="position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;background:#f7f2e8;border:1px solid rgba(20,17,13,.18);border-radius:14px;box-shadow:0 10px 30px rgba(20,17,13,.15);max-height:132px;overflow-y:auto;overscroll-behavior:contain;text-align:left">
                       <sc-for list="{{ citySuggestions }}" as="c" hint-placeholder-count="4">
-                        <div onMouseDown="{{ c.onPick }}" style="padding:11px 15px;font:400 14px 'DM Sans',sans-serif;color:#14110d;cursor:pointer">{{ c.label }}</div>
+                        <div onMouseDown="{{ c.onPick }}" style="height:44px;box-sizing:border-box;display:flex;align-items:center;padding:0 15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:400 14px 'DM Sans',sans-serif;color:#14110d;cursor:pointer">{{ c.label }}</div>
                       </sc-for>
                     </div>
+                  </sc-if>
+                  <sc-if value="{{ cityError }}" hint-placeholder-val="{{ false }}">
+                    <div style="font:400 12px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-top:6px">Pick your city from the suggestions.</div>
                   </sc-if>
                 </div>
               </div>
@@ -445,7 +448,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 class Component extends DCLogic {
   state = {
     visible: {}, active: 'hero', mouse: { x: -100, y: -100 }, mouseActive: false,
-    waitlist: { name: '', email: '', cityZip: '', phone: '', phoneCountry: '+1', smsConsent: false, company: '', referralCode: '' }, citySuggestions: [], cityFocused: false, referralFromLink: false, submitted: false, copied: false,
+    waitlist: { name: '', email: '', cityZip: '', phone: '', phoneCountry: '+1', smsConsent: false, company: '', referralCode: '' }, citySuggestions: [], cityFocused: false, cityPicked: false, cityLookupFailed: false, cityError: false, referralFromLink: false, submitted: false, copied: false,
     submitting: false, submitError: null, resultPosition: null, resultReferralCode: null,
     phoneVerificationRequired: false, otpCode: '', otpStatus: 'idle', otpError: null,
     waitlistModalOpen: false,
@@ -522,6 +525,7 @@ class Component extends DCLogic {
   closeWaitlist() { document.body.style.overflow = ''; this.setState({ waitlistModalOpen: false }); }
   onCityInput(val) {
     this.updateField('cityZip', val);
+    this.setState({ cityPicked: false, cityError: false });
     clearTimeout(this.cityTimer);
     const q = val.trim();
     if (q.length < 2) { this.setState({ citySuggestions: [] }); return; }
@@ -537,10 +541,10 @@ class Component extends DCLogic {
           const label = [p.name, p.state, p.country].filter(Boolean).join(', ');
           if (!p.name || seen.has(label)) continue;
           seen.add(label);
-          list.push({ label, onPick: () => this.setState(s => ({ waitlist: { ...s.waitlist, cityZip: label }, citySuggestions: [] })) });
+          list.push({ label, onPick: () => this.setState(s => ({ waitlist: { ...s.waitlist, cityZip: label }, citySuggestions: [], cityPicked: true, cityError: false })) });
         }
-        this.setState({ citySuggestions: list });
-      } catch (err) { this.setState({ citySuggestions: [] }); }
+        this.setState({ citySuggestions: list, cityLookupFailed: false });
+      } catch (err) { this.setState({ citySuggestions: [], cityLookupFailed: true }); }
     }, 250);
   }
   updateField(field, val) { this.setState(s => ({ waitlist: { ...s.waitlist, [field]: val } })); }
@@ -584,6 +588,8 @@ class Component extends DCLogic {
       this.setState({ submitting: false, submitted: true, resultPosition: null, resultReferralCode: null });
       return;
     }
+    const { cityPicked, cityLookupFailed } = this.state;
+    if (!cityPicked && !cityLookupFailed) { this.setState({ cityError: true }); return; }
     this.setState({ submitting: true, submitError: null });
     const referredByCode = (this.state.waitlist.referralCode || '').trim() || null;
     let row;
@@ -594,7 +600,8 @@ class Component extends DCLogic {
         p_city_or_zip: this.state.waitlist.cityZip || null,
         p_referred_by_code: referredByCode,
         p_phone: this.normalizePhone(this.state.waitlist.phone, this.state.waitlist.phoneCountry),
-        p_sms_consent: false
+        p_sms_consent: false,
+        p_cohort_label: cityPicked ? this.state.waitlist.cityZip : null
       });
       if (error) throw error;
       row = Array.isArray(data) ? data[0] : data;
@@ -760,7 +767,7 @@ class Component extends DCLogic {
       inputStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', background: 'rgba(255,255,255,.45)', boxSizing: 'border-box', width: '100%' },
       waitlist: this.state.waitlist, submitted: this.state.submitted, referralFromLink: this.state.referralFromLink,
       onName: (e) => this.updateField('name', e.target.value), onEmail: (e) => this.updateField('email', e.target.value),
-      onCity: (e) => this.onCityInput(e.target.value), onCityFocus: () => this.setState({ cityFocused: true }), onCityBlur: () => this.setState({ cityFocused: false }), citySuggestions: this.state.citySuggestions, showCitySuggestions: this.state.cityFocused && this.state.citySuggestions.length > 0, onPhone: (e) => this.updateField('phone', e.target.value),
+      onCity: (e) => this.onCityInput(e.target.value), onCityFocus: () => this.setState({ cityFocused: true }), onCityBlur: () => this.setState({ cityFocused: false }), citySuggestions: this.state.citySuggestions, cityError: this.state.cityError, showCitySuggestions: this.state.cityFocused && this.state.citySuggestions.length > 0, onPhone: (e) => this.updateField('phone', e.target.value),
       onPhoneCountry: (e) => this.updateField('phoneCountry', e.target.value),
       onSmsConsent: (e) => this.updateField('smsConsent', e.target.checked),
       onReferralCode: (e) => { this.setState({ referralFromLink: false }); this.updateField('referralCode', e.target.value); },
