@@ -4,6 +4,14 @@
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+// Called directly from the browser (index.html), so CORS headers are required
+// or the fetch is silently blocked with no error surfaced to the page.
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
+
 async function logNotification(record: Record<string, unknown>, status: string, providerId?: string, error?: string) {
   await fetch(`${supabaseUrl}/rest/v1/waitlist_notifications`, {
     method: 'POST',
@@ -18,14 +26,15 @@ async function logNotification(record: Record<string, unknown>, status: string, 
 }
 
 Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
     const { record } = await req.json();
-    if (!record?.email || !record?.id) return new Response('invalid webhook payload', { status: 400 });
+    if (!record?.email || !record?.id) return new Response('invalid webhook payload', { status: 400, headers: corsHeaders });
     const apiKey = Deno.env.get('RESEND_API_KEY');
     const from = Deno.env.get('EMAIL_FROM');
     if (!apiKey || !from) {
       await logNotification(record, 'failed', undefined, 'Email provider is not configured');
-      return new Response('accepted', { status: 202 });
+      return new Response('accepted', { status: 202, headers: corsHeaders });
     }
     const referralLink = `https://hopwithhoppr.com/v/${encodeURIComponent(record.referral_code)}`;
     const name = String(record.first_name || 'there').replace(/[<>&"']/g, '');
@@ -108,12 +117,12 @@ Deno.serve(async (req: Request) => {
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       await logNotification(record, 'failed', undefined, JSON.stringify(body).slice(0, 1000));
-      return new Response('accepted', { status: 202 });
+      return new Response('accepted', { status: 202, headers: corsHeaders });
     }
     await logNotification(record, 'sent', body.id);
-    return new Response('ok');
+    return new Response('ok', { headers: corsHeaders });
   } catch (error) {
     console.error(error);
-    return new Response('accepted', { status: 202 });
+    return new Response('accepted', { status: 202, headers: corsHeaders });
   }
 });

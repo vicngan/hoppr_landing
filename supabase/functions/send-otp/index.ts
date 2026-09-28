@@ -7,6 +7,12 @@
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
+
 const CODE_TTL_MINUTES = 10;
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -29,13 +35,14 @@ function normalizeEmail(email: unknown): string | null {
 }
 
 Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (req.method !== 'POST') return new Response('method not allowed', { status: 405 });
+    if (req.method !== 'POST') return new Response('method not allowed', { status: 405, headers: corsHeaders });
     const body = await req.json().catch(() => ({}));
     const email = normalizeEmail(body.email);
     const phone = String(body.phone || '').replace(/[^0-9+]/g, '');
     if (!email || !/^\+[1-9][0-9]{7,14}$/.test(phone)) {
-      return new Response(JSON.stringify({ error: 'invalid_request' }), { status: 400 });
+      return new Response(JSON.stringify({ error: 'invalid_request' }), { status: 400, headers: corsHeaders });
     }
 
     const memberRes = await sb(`waitlist?email=eq.${encodeURIComponent(email)}&select=id,phone_e164,sms_consent,phone_verified_at,sms_unsubscribed_at`);
@@ -43,7 +50,7 @@ Deno.serve(async (req: Request) => {
     const member = Array.isArray(members) ? members[0] : null;
     // Deliberately generic response: never reveal whether the email exists,
     // whether the phone matched, or whether it's already verified.
-    const genericOk = new Response(JSON.stringify({ ok: true }), { status: 200 });
+    const genericOk = new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders });
     if (!member || member.phone_e164 !== phone || !member.sms_consent || member.sms_unsubscribed_at) {
       return genericOk;
     }
@@ -96,6 +103,6 @@ Deno.serve(async (req: Request) => {
     return genericOk;
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders });
   }
 });

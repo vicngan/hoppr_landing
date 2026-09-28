@@ -4,6 +4,12 @@
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
+
 const MAX_ATTEMPTS = 5;
 
 async function sha256Hex(input: string): Promise<string> {
@@ -24,22 +30,23 @@ function normalizeEmail(email: unknown): string | null {
 }
 
 Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
-    if (req.method !== 'POST') return new Response('method not allowed', { status: 405 });
+    if (req.method !== 'POST') return new Response('method not allowed', { status: 405, headers: corsHeaders });
     const body = await req.json().catch(() => ({}));
     const email = normalizeEmail(body.email);
     const phone = String(body.phone || '').replace(/[^0-9+]/g, '');
     const code = String(body.code || '').trim();
     if (!email || !/^\+[1-9][0-9]{7,14}$/.test(phone) || !/^\d{6}$/.test(code)) {
-      return new Response(JSON.stringify({ ok: false, error: 'invalid_request' }), { status: 400 });
+      return new Response(JSON.stringify({ ok: false, error: 'invalid_request' }), { status: 400, headers: corsHeaders });
     }
 
     const memberRes = await sb(`waitlist?email=eq.${encodeURIComponent(email)}&select=id,phone_e164,phone_verified_at`);
     const members = await memberRes.json();
     const member = Array.isArray(members) ? members[0] : null;
-    const fail = new Response(JSON.stringify({ ok: false, error: 'invalid_or_expired_code' }), { status: 400 });
+    const fail = new Response(JSON.stringify({ ok: false, error: 'invalid_or_expired_code' }), { status: 400, headers: corsHeaders });
     if (!member || member.phone_e164 !== phone) return fail;
-    if (member.phone_verified_at) return new Response(JSON.stringify({ ok: true, already_verified: true }));
+    if (member.phone_verified_at) return new Response(JSON.stringify({ ok: true, already_verified: true }), { headers: corsHeaders });
 
     const activeRes = await sb(
       `phone_verification_codes?waitlist_id=eq.${member.id}&consumed_at=is.null&expires_at=gt.${new Date().toISOString()}&order=created_at.desc&limit=1`
@@ -71,9 +78,9 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({ waitlist_id: member.id, event_type: 'phone_verified' }),
     });
 
-    return new Response(JSON.stringify({ ok: true }));
+    return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ ok: false, error: 'server_error' }), { status: 500 });
+    return new Response(JSON.stringify({ ok: false, error: 'server_error' }), { status: 500, headers: corsHeaders });
   }
 });
