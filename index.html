@@ -17,6 +17,8 @@
   a:hover{color:#a3350f}
   .join-btn{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
   .join-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 20px rgba(20,17,13,.22);filter:brightness(1.12)}
+  .taste-chip{cursor:default;transition:opacity .5s var(--d,0ms),transform .5s var(--d,0ms),scale .2s ease,translate .2s ease,box-shadow .2s ease,background-color .2s ease}
+  .taste-chip:hover{scale:1.08;translate:0 -3px;box-shadow:0 8px 18px rgba(20,17,13,.14);background-color:rgba(200,67,28,.16) !important}
   .join-btn:active{transform:translateY(0) scale(.98);box-shadow:none}
   @keyframes hopIdle{0%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}100%{transform:translateY(0) rotate(-4deg)}}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-9px) rotate(var(--r,0deg))}}
@@ -39,7 +41,7 @@
     <div onClick="{{ stopPropagation }}" style="{{ waitlistModalCardStyle }}">
       <div onClick="{{ onCloseWaitlist }}" style="{{ waitlistModalCloseStyle }}">×</div>
 
-      <div style="flex:1;padding:48px 44px;min-width:0;box-sizing:border-box">
+      <div style="flex:1;padding:48px 44px 22px;min-width:0;box-sizing:border-box">
         <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
           <img src="./assets/hoppr-mark.png" alt="" style="width:60px;height:60px;object-fit:contain;margin-bottom:14px;display:block;animation:hopIdle 2.4s ease-in-out infinite">
           <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Ann Arbor waitlist</div>
@@ -59,8 +61,10 @@
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
               <div>
-                <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">City or ZIP</div>
-                <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" placeholder="Ann Arbor" style="{{ inputStyle }}">
+                <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Location</div>
+                <select value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" style="{{ selectStyle }}">
+                  <option value="Ann Arbor, MI">Ann Arbor, MI</option>
+                </select>
               </div>
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Phone <span style="text-transform:none">(optional)</span></div>
@@ -71,13 +75,13 @@
               <input checked="{{ waitlist.smsConsent }}" onChange="{{ onSmsConsent }}" type="checkbox" style="margin:2px 0 0">
               <span style="font:400 12px/1.45 'DM Sans',sans-serif;color:rgba(20,17,13,.65)">I agree to receive waitlist, launch, and access alerts by SMS from Hoppr.</span>
             </label>
-            <div style="font:400 9px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.45);margin:0 0 14px">Consent is optional and isn’t required to join. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe. We’ll verify your number with a one-time code before sending alerts. See our <a href="/privacy" target="_blank">Privacy Policy</a> and <a href="/terms" target="_blank">Terms</a>.</div>
+            <div style="font:400 9px/1.4 'DM Sans',sans-serif;color:rgba(20,17,13,.45);margin:0 0 28px">Consent is optional and isn’t required to join. Message and data rates may apply. Reply HELP for help or STOP to unsubscribe. We’ll verify your number with a one-time code before sending alerts. See our <a href="/privacy" target="_blank">Privacy Policy</a> and <a href="/terms" target="_blank">Terms</a>.</div>
             <sc-if value="{{ submitError }}" hint-placeholder-val="{{ false }}">
               <div style="font:400 13px/1.4 'DM Sans',sans-serif;color:#c8431c;margin-bottom:12px">{{ submitError }}</div>
             </sc-if>
             <button type="submit" disabled="{{ submitting }}" style="{{ submitButtonStyle }}">{{ submitButtonLabel }}</button>
           </form>
-          <div style="font:400 10px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:14px">Free during beta · no spam · leave anytime</div>
+          <div style="font:400 10px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:20px">Free during beta · no spam · leave anytime</div>
         </sc-if>
         <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
           <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Admit one · Ann Arbor waitlist</div>
@@ -118,15 +122,15 @@
         <div style="position:absolute;bottom:-12px;left:-11px;width:22px;height:22px;border-radius:50%;background:#f7f2e8"></div>
       </div>
 
-      <div style="width:210px;flex-shrink:0;background:#efe8da;padding:64px 20px 32px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;box-sizing:border-box">
-        <div style="font:500 9px/1.4 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop<br>Ann Arbor, MI</div>
+      <div style="width:210px;flex-shrink:0;background:#efe8da;padding:64px 20px 22px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;box-sizing:border-box">
+        <div style="font:500 12px/1.5 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop<br>Ann Arbor, MI</div>
         <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
-          <div style="font:400 15px/1.3 'Instrument Serif',serif;font-style:italic;color:#c8431c">Admit One</div>
+          <div style="font:400 28px/1.3 'Instrument Serif',serif;font-style:italic;color:#c8431c">Admit One</div>
         </sc-if>
         <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div style="font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:6px">No.</div>
-            <div style="font:400 34px/1 'Instrument Serif',serif;color:#c8431c">{{ resultPosition }}</div>
+            <div style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:8px">No.</div>
+            <div style="font:400 64px/1 'Instrument Serif',serif;color:#c8431c">{{ resultPosition }}</div>
           </div>
         </sc-if>
         <div style="display:flex;gap:2px">
@@ -204,7 +208,7 @@
     <div style="font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.45);margin-bottom:18px">Your taste, lately</div>
     <div style="display:flex;flex-wrap:wrap;gap:10px">
       <sc-for list="{{ tasteChips }}" as="c" hint-placeholder-count="8">
-        <div style="{{ c.style }}">{{ c.label }}</div>
+        <div class="taste-chip" style="{{ c.style }}">{{ c.label }}</div>
       </sc-for>
     </div>
   </div>
@@ -378,13 +382,6 @@
 <div style="padding:40px 6vw 30px;text-align:center;border-top:1px solid rgba(20,17,13,.08);background:#efe8da">
   <img src="./assets/hoppr-wordmark-v2-trimmed.png" alt="" style="width:120px;height:auto;object-fit:contain;margin-bottom:10px">
   <div style="font:400 16px/1.4 'Instrument Serif',serif;font-style:italic;color:rgba(20,17,13,.55);margin-bottom:16px">for people who don't know where they're going yet.</div>
-  <div style="display:flex;gap:20px;justify-content:center;margin-bottom:16px">
-    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Instagram</a>
-    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">TikTok</a>
-    <a href="#" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Contact</a>
-    <a href="/privacy" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Privacy</a>
-    <a href="/terms" style="font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.55);text-decoration:none">Terms</a>
-  </div>
   <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.35)">made in ann arbor · 2026</div>
 </div>
 
@@ -399,7 +396,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 class Component extends DCLogic {
   state = {
     visible: {}, active: 'hero', mouse: { x: -100, y: -100 }, mouseActive: false,
-    waitlist: { name: '', email: '', cityZip: '', phone: '', smsConsent: false, company: '' }, submitted: false, copied: false,
+    waitlist: { name: '', email: '', cityZip: 'Ann Arbor, MI', phone: '', smsConsent: false, company: '' }, submitted: false, copied: false,
     submitting: false, submitError: null, resultPosition: null, resultReferralCode: null,
     phoneVerificationRequired: false, otpCode: '', otpStatus: 'idle', otpError: null,
     waitlistModalOpen: false,
@@ -493,7 +490,7 @@ class Component extends DCLogic {
   }
   getBarcodeBars() {
     const widths = [2, 1, 3, 1, 1, 2, 3, 1, 2, 1, 1, 3, 2, 1, 2, 3, 1, 1, 2];
-    return widths.map((w) => ({ style: { width: w + 'px', height: '32px', background: '#14110d', opacity: 0.75 } }));
+    return widths.map((w) => ({ style: { width: w + 'px', height: '56px', background: '#14110d', opacity: 0.75 } }));
   }
   normalizePhone(raw) {
     const t = (raw || '').trim();
@@ -672,6 +669,7 @@ class Component extends DCLogic {
       tryQ1Options: this.getTryOptions(1), tryQ2Options: this.getTryOptions(2), tryShowQ2: !!this.state.tryQ1, tryShowResult: !!(this.state.tryQ1 && this.state.tryQ2), onTryReset: () => this.setState({ tryQ1: null, tryQ2: null }),
       marqueeRow1: this.getMarquee(false), marqueeRow2: this.getMarquee(true),
       waitlistMascotStyle: { width: '140px', height: '140px', objectFit: 'contain', marginBottom: '-24px', animation: 'hopIdle 6s ease-in-out infinite' },
+      selectStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 40px 14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', backgroundColor: 'rgba(255,255,255,.45)', backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2314110d' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center', appearance: 'none', WebkitAppearance: 'none', boxSizing: 'border-box', width: '100%', color: '#14110d', cursor: 'pointer' },
       inputStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', background: 'rgba(255,255,255,.45)', boxSizing: 'border-box', width: '100%' },
       waitlist: this.state.waitlist, submitted: this.state.submitted,
       onName: (e) => this.updateField('name', e.target.value), onEmail: (e) => this.updateField('email', e.target.value),
@@ -714,7 +712,7 @@ class Component extends DCLogic {
         display: 'inline-block', font: '500 ' + c.size + "px/1 'DM Sans',sans-serif", padding: '9px 15px', borderRadius: '100px',
         background: c.arrow ? 'rgba(200,67,28,.1)' : '#f7f2e8', color: c.arrow ? '#c8431c' : '#14110d',
         transform: shown ? 'translateY(0) rotate(' + ((i % 2 === 0 ? -1 : 1) * (i % 3)) + 'deg)' : 'translateY(10px)',
-        opacity: shown ? 1 : 0, transition: 'opacity .5s, transform .5s', transitionDelay: shown ? (i * 60) + 'ms' : '0ms'
+        opacity: shown ? 1 : 0, '--d': shown ? (i * 60) + 'ms' : '0ms'
       }
     }));
   }
