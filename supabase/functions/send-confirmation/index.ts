@@ -33,8 +33,76 @@ Deno.serve(async (req: Request) => {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from, to: record.email, subject: "You're in the Hoppr waitlist",
-        html: `<p>Hey ${name},</p><p>You’re in the Hoppr waitlist for <strong>Ann Arbor</strong>. We’ll email you when your spot opens.</p><p>Your place in line is based on signup time. Share Hoppr with your people: <a href="${referralLink}">${referralLink}</a></p><p>— The Hoppr team</p>`
+        from,
+        to: record.email,
+        subject: `You're on the Hoppr list, ${name} 🎉`,
+        html: `
+<div style="background:#faf6ef;padding:32px 16px;font-family:'DM Sans',Helvetica,Arial,sans-serif;color:#14110d">
+  <div style="display:none;font-size:1px;color:#faf6ef;max-height:0;overflow:hidden">
+    Less “what should we do?” More “let’s go.” Your Hoppr invite is inside.
+  </div>
+
+  <table role="presentation" width="100%" style="max-width:520px;margin:0 auto;background:#fff;border-radius:20px;padding:36px 32px">
+    <tr><td>
+      <p style="font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 10px">
+        You're officially on the list
+      </p>
+
+      <h1 style="font-size:32px;line-height:1.15;margin:0 0 20px">
+        Hey ${name}, your next night out starts here. 🐸
+      </h1>
+
+      <p style="font-size:16px;line-height:1.7;margin:0 0 18px">
+        You know how it goes: someone says, “We should do something tonight,” and then the group chat spends an hour deciding what “something” is.
+      </p>
+
+      <p style="font-size:16px;line-height:1.7;margin:0 0 18px">
+        That's why we're making Hoppr. We're here to make getting out in Ann Arbor feel easier, more spontaneous, and a lot more fun—especially when you're trying to make a plan with friends.
+      </p>
+
+      <p style="font-size:16px;line-height:1.7;margin:0 0 26px">
+        And now you're one step closer. You're on the waitlist, and we'll email you as soon as it's your turn to get in.
+      </p>
+
+      <div style="background:#faf6ef;border-radius:16px;padding:22px 24px;margin:0 0 26px">
+        <p style="font-size:16px;font-weight:700;margin:0 0 12px">
+          Here's the plan:
+        </p>
+        <p style="font-size:15px;line-height:1.6;margin:0 0 10px">
+          <strong>1.</strong> Keep an eye on your inbox. We'll let you know when your spot opens.
+        </p>
+        <p style="font-size:15px;line-height:1.6;margin:0 0 10px">
+          <strong>2.</strong> Earlier signups get in first. You're already ahead of everyone who hasn't joined yet.
+        </p>
+        <p style="font-size:15px;line-height:1.6;margin:0">
+          <strong>3.</strong> Share your link with friends to move up the list—and make sure your favorite people are there when you get in.
+        </p>
+      </div>
+
+      <p style="font-size:16px;line-height:1.7;margin:0 0 22px">
+        Think of the friends who are always down to go out, the ones who need a little convincing, and the one who somehow knows every place in town. Send them your link. The best plans are better together.
+      </p>
+
+      <a href="${referralLink}" style="display:inline-block;background:#14110d;color:#fff;text-decoration:none;font-size:15px;font-weight:700;padding:15px 26px;border-radius:999px">
+        Invite your crew →
+      </a>
+
+      <p style="font-size:13px;line-height:1.5;color:#77716a;margin:20px 0 0">
+        Or copy your personal link:
+        <a href="${referralLink}" style="color:#14110d;word-break:break-all">${referralLink}</a>
+      </p>
+
+      <p style="font-size:16px;line-height:1.7;margin:32px 0 0">
+        We're excited to have you here. Good nights are coming.
+      </p>
+
+      <p style="font-size:15px;line-height:1.6;margin:18px 0 0">
+        See you out there,<br>
+        <strong>The Hoppr team 🐸</strong>
+      </p>
+    </td></tr>
+  </table>
+</div>`
       })
     });
     const body = await response.json().catch(() => ({}));
