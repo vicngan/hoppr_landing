@@ -244,7 +244,7 @@ begin
   update waitlist set status = 'activated', claimed_at = now(), activated_at = now(), invitation_token_hash = null where id = v_member.id;
   insert into waitlist_audit_log (waitlist_id, event_type) values (v_member.id, 'activated');
   select app_url into v_url from cohorts where slug = v_member.cohort;
-  return query select coalesce(v_url, 'https://hoppr.app');
+  return query select coalesce(v_url, 'https://hopwithhoppr.com');
 end; $$;
 
 revoke all on table waitlist, waitlist_notifications, phone_verification_codes, waitlist_audit_log, waitlist_rate_limit from anon, authenticated;

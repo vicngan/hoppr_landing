@@ -27,7 +27,7 @@ Deno.serve(async (req: Request) => {
       await logNotification(record, 'failed', undefined, 'Email provider is not configured');
       return new Response('accepted', { status: 202 });
     }
-    const referralLink = `https://hoppr.app/v/${encodeURIComponent(record.referral_code)}`;
+    const referralLink = `https://hopwithhoppr.com/v/${encodeURIComponent(record.referral_code)}`;
     const name = String(record.first_name || 'there').replace(/[<>&"']/g, '');
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',

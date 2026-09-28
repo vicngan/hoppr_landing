@@ -43,7 +43,7 @@ Deno.serve(async (req: Request) => {
     const rows = await memberRes.json();
     const member = Array.isArray(rows) ? rows[0] : null;
 
-    const siteUrl = Deno.env.get('SITE_URL') || 'https://hoppr.app';
+    const siteUrl = Deno.env.get('SITE_URL') || 'https://hopwithhoppr.com';
     const claimLink = `${siteUrl.replace(/\/$/, '')}/claim.html?token=${encodeURIComponent(invitation_token)}`;
     const name = String(first_name || 'there').replace(/[<>&"']/g, '');
     const deadline = new Date(claim_deadline);

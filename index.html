@@ -15,6 +15,9 @@
   body{margin:0;background:#f7f2e8}
   a{color:#c8431c}
   a:hover{color:#a3350f}
+  .join-btn{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+  .join-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 20px rgba(20,17,13,.22);filter:brightness(1.12)}
+  .join-btn:active{transform:translateY(0) scale(.98);box-shadow:none}
   @keyframes hopIdle{0%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}100%{transform:translateY(0) rotate(-4deg)}}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-9px) rotate(var(--r,0deg))}}
   @keyframes bubbleIn{0%{opacity:0;transform:translateY(8px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
@@ -143,7 +146,7 @@
   <div style="display:flex;align-items:center;gap:28px">
     <div onClick="{{ goLearn }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">How it works</div>
     <div onClick="{{ goTogether }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">Together</div>
-    <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:10px 18px;font:500 13px/1 'DM Sans',sans-serif">Join waitlist ↗</div>
+    <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:10px 18px;font:500 13px/1 'DM Sans',sans-serif">Join waitlist ↗</div>
   </div>
 </div>
 
@@ -160,7 +163,7 @@
     <h1 style="font:400 62px/1.05 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.02em">Don't know where to go? <span style="color:#c8431c;font-style:italic">good.</span></h1>
     <p style="font:400 18px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 30px;text-wrap:pretty">Tell Hoppr what you're feeling. We'll narrow down the noise and find somewhere that fits.</p>
     <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-      <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
+      <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
       <div style="font:400 12px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.04em">Launching first in Ann Arbor</div>
     </div>
   </div>
@@ -329,7 +332,7 @@
       <div style="font:500 11px/1 'JetBrains Mono',monospace;color:#c8431c">94% your taste</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:22px">
-      <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:15px 28px;font:500 15px/1 'DM Sans',sans-serif">Join waitlist →</div>
+      <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:15px 28px;font:500 15px/1 'DM Sans',sans-serif">Join waitlist →</div>
       <div onClick="{{ onTryReset }}" style="cursor:pointer;font:500 12px/1 'DM Sans',sans-serif;color:rgba(20,17,13,.45);text-decoration:underline">Try again</div>
     </div>
   </sc-if>
@@ -365,11 +368,11 @@
   <h2 style="font:400 52px/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Your next favorite place</h2>
   <h2 style="font:400 52px/1.1 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.01em">is probably nearby.</h2>
   <p style="font:400 17px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 28px;max-width:440px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
-  <div style="display:inline-flex;align-items:center;gap:8px;background:#efe8da;border-radius:100px;padding:8px 16px;margin-bottom:36px">
+  <div style="display:inline-flex;align-items:center;gap:8px;background:#efe8da;border-radius:100px;padding:8px 16px;margin-bottom:36px;margin-right:28px">
     <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop</div>
     <div style="font:500 13px/1 'JetBrains Mono',monospace;letter-spacing:.06em;color:#14110d">Ann Arbor, MI</div>
   </div>
-  <div onClick="{{ onOpenWaitlist }}" style="cursor:pointer;display:inline-block;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
+  <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;display:inline-block;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
 </div>
 
 <div style="padding:40px 6vw 30px;text-align:center;border-top:1px solid rgba(20,17,13,.08);background:#efe8da">
@@ -537,7 +540,7 @@ class Component extends DCLogic {
     }
   }
   copyInvite() {
-    try { navigator.clipboard.writeText('hoppr.app/v/' + (this.state.resultReferralCode || '')); } catch (err) {}
+    try { navigator.clipboard.writeText('hopwithhoppr.com/v/' + (this.state.resultReferralCode || '')); } catch (err) {}
     this.setState({ copied: true });
     if (this.copyTimer) clearTimeout(this.copyTimer);
     this.copyTimer = setTimeout(() => this.setState({ copied: false }), 1800);
@@ -672,7 +675,7 @@ class Component extends DCLogic {
       submitButtonLabel: this.state.submitting ? 'Joining…' : 'Join waitlist →',
       submitButtonStyle: { width: '100%', cursor: 'pointer', background: '#c8431c', color: '#f7f2e8', border: 'none', borderRadius: '100px', padding: '17px', font: "500 16px/1 'DM Sans',sans-serif", opacity: this.state.submitting ? 0.6 : 1 },
       resultPosition: this.state.resultPosition,
-      resultReferralLink: 'hoppr.app/v/' + (this.state.resultReferralCode || ''),
+      resultReferralLink: 'hopwithhoppr.com/v/' + (this.state.resultReferralCode || ''),
       showOtpPanel: this.state.phoneVerificationRequired && this.state.otpStatus !== 'verified',
       otpJustVerified: this.state.otpStatus === 'verified',
       otpCode: this.state.otpCode, onOtpCode: (e) => this.setState({ otpCode: e.target.value.replace(/\D/g, '').slice(0, 6) }),

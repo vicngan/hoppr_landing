@@ -79,7 +79,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (text === 'help') {
-      return twiml('Hoppr waitlist alerts. Msg & data rates may apply. Reply STOP to unsubscribe. Support: hello@hoppr.app');
+      return twiml('Hoppr waitlist alerts. Msg & data rates may apply. Reply STOP to unsubscribe. Support: hello@hopwithhoppr.com');
     }
 
     return twiml();

@@ -49,7 +49,7 @@
     const { data, error } = await supabaseClient.rpc('claim_waitlist_invite', { p_token: token });
     if (error) throw error;
     const row = Array.isArray(data) ? data[0] : data;
-    const destination = (row && row.destination) || 'https://hoppr.app';
+    const destination = (row && row.destination) || 'https://hopwithhoppr.com';
     render('You’re in!', 'Your Hoppr spot is claimed. Tap below to open the app.', destination, 'Open Hoppr →');
     setTimeout(() => { window.location.href = destination; }, 1200);
   } catch (err) {

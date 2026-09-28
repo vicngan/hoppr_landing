@@ -86,7 +86,7 @@ webhook and failing/missing email config doesn't block the form.
      just silently doesn't send (logged as `failed` with a clear reason in
      `waitlist_notifications`).
    - `SITE_URL` — the base URL claim links point at (defaults to
-     `https://hoppr.app`). Point it at wherever `claim.html` is actually
+     `https://hopwithhoppr.com`). Point it at wherever `claim.html` is actually
      hosted.
    - `INTERNAL_FUNCTION_SECRET` — any random string; shared between
      `admin-release` and `send-invitation` so `send-invitation` can't be
