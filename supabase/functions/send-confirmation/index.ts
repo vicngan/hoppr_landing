@@ -66,7 +66,7 @@ Deno.serve(async (req: Request) => {
       </p>
 
       <p style="font-size:16px;line-height:1.7;margin:0 0 18px">
-        That's why we're making Hoppr. We're here to make getting out in Ann Arbor feel easier, more spontaneous, and a lot more fun—especially when you're trying to make a plan with friends.
+        That's why we're making Hoppr. We're here to make getting out feel easier, more spontaneous, and a lot more fun—especially when you're trying to make a plan with friends.
       </p>
 
       <p style="font-size:16px;line-height:1.7;margin:0 0 26px">

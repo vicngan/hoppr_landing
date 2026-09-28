@@ -63,7 +63,7 @@
       <div class="modal-form-pane" style="flex:1;padding:48px 44px 22px;min-width:0;box-sizing:border-box">
         <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
           <img src="./assets/hoppr-mark.png" alt="" style="width:60px;height:60px;object-fit:contain;margin-bottom:14px;display:block;animation:hopIdle 2.4s ease-in-out infinite">
-          <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Ann Arbor waitlist</div>
+          <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Hoppr waitlist</div>
           <div class="modal-headline-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
             <h2 style="font:400 clamp(24px,6vw,34px)/1.1 'Instrument Serif',serif;margin:0;letter-spacing:-.01em">Your next favorite place is probably nearby.</h2>
             <input class="modal-referral-input" value="{{ waitlist.referralCode }}" onChange="{{ onReferralCode }}" placeholder="referral code?" style="flex-shrink:0;font:400 13px 'DM Sans',sans-serif;padding:6px 10px;border:1px solid rgba(20,17,13,.18);border-radius:8px;background:rgba(255,255,255,.6);width:140px;box-sizing:border-box;margin-top:4px">
@@ -72,7 +72,7 @@
           <sc-if value="{{ referralFromLink }}" hint-placeholder-val="{{ false }}">
             <div style="font:500 11px/1.4 'DM Sans',sans-serif;color:#c8431c;margin:-2px 0 12px">🎉 Referral code applied — thanks for the invite!</div>
           </sc-if>
-          <p style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 22px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
+          <p style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 22px">Tell us where you are. We'll email you when Hoppr opens in your city.</p>
           <form onSubmit="{{ onSubmit }}" style="text-align:left">
             <input value="{{ waitlist.company }}" onChange="{{ onCompany }}" name="website_url" type="text" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <div class="two-col-grid" style="margin-bottom:12px">
@@ -88,9 +88,16 @@
             <div class="two-col-grid" style="margin-bottom:12px">
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Location</div>
-                <select value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" style="{{ selectStyle }}">
-                  <option value="Ann Arbor, MI">Ann Arbor, MI</option>
-                </select>
+                <div style="position:relative">
+                  <input value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" onFocus="{{ onCityFocus }}" onBlur="{{ onCityBlur }}" placeholder="your city, e.g. Ann Arbor" autocomplete="off" required style="{{ inputStyle }}">
+                  <sc-if value="{{ showCitySuggestions }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;background:#f7f2e8;border:1px solid rgba(20,17,13,.18);border-radius:14px;box-shadow:0 10px 30px rgba(20,17,13,.15);overflow:hidden;text-align:left">
+                      <sc-for list="{{ citySuggestions }}" as="c" hint-placeholder-count="4">
+                        <div onMouseDown="{{ c.onPick }}" style="padding:11px 15px;font:400 14px 'DM Sans',sans-serif;color:#14110d;cursor:pointer">{{ c.label }}</div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
               </div>
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Phone <span style="text-transform:none">(optional)</span></div>
@@ -126,7 +133,7 @@
           <div style="font:400 10px/1 'JetBrains Mono',monospace;color:rgba(20,17,13,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:20px">Free during beta · no spam · leave anytime</div>
         </sc-if>
         <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
-          <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Admit one · Ann Arbor waitlist</div>
+          <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Admit one · Hoppr waitlist</div>
           <div style="position:relative;display:inline-block">
             <div style="font:400 clamp(30px,9vw,44px)/1.1 'Instrument Serif',serif;margin-bottom:10px">You're in.</div>
             <sc-for list="{{ confettiPieces }}" as="p" hint-placeholder-count="12">
@@ -410,10 +417,10 @@
 
   <img src="./assets/hoppr-mark.png" alt="" style="{{ waitlistMascotStyle }}">
 
-  <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:18px">Ann Arbor waitlist</div>
+  <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:18px">Hoppr waitlist</div>
   <h2 style="font:400 clamp(28px,8vw,52px)/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Your next favorite place</h2>
   <h2 style="font:400 clamp(28px,8vw,52px)/1.1 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.01em">is probably nearby.</h2>
-  <p style="font:400 17px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 28px;max-width:440px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
+  <p style="font:400 17px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 28px;max-width:440px">Tell us where you are. We'll email you when Hoppr opens in your city.</p>
   <div style="display:inline-flex;align-items:center;gap:8px;background:#efe8da;border-radius:100px;padding:8px 16px;margin-bottom:36px;margin-right:28px">
     <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop</div>
     <div style="font:500 13px/1 'JetBrains Mono',monospace;letter-spacing:.06em;color:#14110d">Ann Arbor, MI</div>
@@ -438,7 +445,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 class Component extends DCLogic {
   state = {
     visible: {}, active: 'hero', mouse: { x: -100, y: -100 }, mouseActive: false,
-    waitlist: { name: '', email: '', cityZip: 'Ann Arbor, MI', phone: '', phoneCountry: '+1', smsConsent: false, company: '', referralCode: '' }, referralFromLink: false, submitted: false, copied: false,
+    waitlist: { name: '', email: '', cityZip: '', phone: '', phoneCountry: '+1', smsConsent: false, company: '', referralCode: '' }, citySuggestions: [], cityFocused: false, referralFromLink: false, submitted: false, copied: false,
     submitting: false, submitError: null, resultPosition: null, resultReferralCode: null,
     phoneVerificationRequired: false, otpCode: '', otpStatus: 'idle', otpError: null,
     waitlistModalOpen: false,
@@ -513,6 +520,29 @@ class Component extends DCLogic {
   scrollTo(name) { const el = this.sectionEls[name]; if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   openWaitlist() { document.body.style.overflow = 'hidden'; this.setState({ waitlistModalOpen: true }); }
   closeWaitlist() { document.body.style.overflow = ''; this.setState({ waitlistModalOpen: false }); }
+  onCityInput(val) {
+    this.updateField('cityZip', val);
+    clearTimeout(this.cityTimer);
+    const q = val.trim();
+    if (q.length < 2) { this.setState({ citySuggestions: [] }); return; }
+    this.cityTimer = setTimeout(async () => {
+      try {
+        const res = await fetch('https://photon.komoot.io/api/?limit=6&layer=city&lang=en&q=' + encodeURIComponent(q));
+        const json = await res.json();
+        if (this.state.waitlist.cityZip.trim() !== q) return;
+        const seen = new Set();
+        const list = [];
+        for (const f of json.features || []) {
+          const p = f.properties || {};
+          const label = [p.name, p.state, p.country].filter(Boolean).join(', ');
+          if (!p.name || seen.has(label)) continue;
+          seen.add(label);
+          list.push({ label, onPick: () => this.setState(s => ({ waitlist: { ...s.waitlist, cityZip: label }, citySuggestions: [] })) });
+        }
+        this.setState({ citySuggestions: list });
+      } catch (err) { this.setState({ citySuggestions: [] }); }
+    }, 250);
+  }
   updateField(field, val) { this.setState(s => ({ waitlist: { ...s.waitlist, [field]: val } })); }
   getConfettiPieces() {
     const colors = ['#c8431c', '#14110d', 'rgba(200,67,28,.55)'];
@@ -730,7 +760,7 @@ class Component extends DCLogic {
       inputStyle: { font: "400 15px 'DM Sans',sans-serif", padding: '14px 15px', border: '1px solid rgba(20,17,13,.18)', borderRadius: '14px', background: 'rgba(255,255,255,.45)', boxSizing: 'border-box', width: '100%' },
       waitlist: this.state.waitlist, submitted: this.state.submitted, referralFromLink: this.state.referralFromLink,
       onName: (e) => this.updateField('name', e.target.value), onEmail: (e) => this.updateField('email', e.target.value),
-      onCity: (e) => this.updateField('cityZip', e.target.value), onPhone: (e) => this.updateField('phone', e.target.value),
+      onCity: (e) => this.onCityInput(e.target.value), onCityFocus: () => this.setState({ cityFocused: true }), onCityBlur: () => this.setState({ cityFocused: false }), citySuggestions: this.state.citySuggestions, showCitySuggestions: this.state.cityFocused && this.state.citySuggestions.length > 0, onPhone: (e) => this.updateField('phone', e.target.value),
       onPhoneCountry: (e) => this.updateField('phoneCountry', e.target.value),
       onSmsConsent: (e) => this.updateField('smsConsent', e.target.checked),
       onReferralCode: (e) => { this.setState({ referralFromLink: false }); this.updateField('referralCode', e.target.value); },
