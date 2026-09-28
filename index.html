@@ -25,6 +25,20 @@
   .taste-chip{cursor:default;transition:opacity .5s var(--d,0ms),transform .5s var(--d,0ms),scale .2s ease,translate .2s ease,box-shadow .2s ease,background-color .2s ease}
   .taste-chip:hover{scale:1.08;translate:0 -3px;box-shadow:0 8px 18px rgba(20,17,13,.14);background-color:rgba(200,67,28,.16) !important}
   .join-btn:active{transform:translateY(0) scale(.98);box-shadow:none}
+  .two-col-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:680px){
+    .modal-card{flex-direction:column;max-height:94vh;overflow-y:auto!important;border-radius:24px!important}
+    .modal-form-pane{padding:34px 22px 20px!important}
+    .modal-divider{width:auto!important;height:2px!important;align-self:stretch!important;background-image:repeating-linear-gradient(90deg,rgba(20,17,13,.22) 0 6px,transparent 6px 12px)!important}
+    .modal-divider>div{display:none}
+    .modal-ticket{width:auto!important;padding:18px 22px 26px!important;flex-direction:row!important;justify-content:space-between!important}
+    .modal-headline-row{flex-direction:column;align-items:flex-start!important}
+    .modal-referral-input{width:100%!important;margin-top:10px!important}
+    .two-col-grid{grid-template-columns:1fr}
+    .nav-text-link{display:none!important}
+    .nav-logo{height:34px!important}
+    .hero-phone{width:150px!important;height:270px!important}
+  }
   @keyframes hopIdle{0%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(5deg)}100%{transform:translateY(0) rotate(-4deg)}}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-9px) rotate(var(--r,0deg))}}
   @keyframes bubbleIn{0%{opacity:0;transform:translateY(8px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
@@ -43,16 +57,16 @@
 
 <sc-if value="{{ waitlistModalOpen }}" hint-placeholder-val="{{ false }}">
   <div onClick="{{ onCloseWaitlist }}" style="{{ waitlistModalOverlayStyle }}">
-    <div onClick="{{ stopPropagation }}" style="{{ waitlistModalCardStyle }}">
+    <div class="modal-card" onClick="{{ stopPropagation }}" style="{{ waitlistModalCardStyle }}">
       <div onClick="{{ onCloseWaitlist }}" style="{{ waitlistModalCloseStyle }}">×</div>
 
-      <div style="flex:1;padding:48px 44px 22px;min-width:0;box-sizing:border-box">
+      <div class="modal-form-pane" style="flex:1;padding:48px 44px 22px;min-width:0;box-sizing:border-box">
         <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
           <img src="./assets/hoppr-mark.png" alt="" style="width:60px;height:60px;object-fit:contain;margin-bottom:14px;display:block;animation:hopIdle 2.4s ease-in-out infinite">
           <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Ann Arbor waitlist</div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
-            <h2 style="font:400 34px/1.1 'Instrument Serif',serif;margin:0;letter-spacing:-.01em">Your next favorite place is probably nearby.</h2>
-            <input value="{{ waitlist.referralCode }}" onChange="{{ onReferralCode }}" placeholder="referral code?" style="flex-shrink:0;font:400 13px 'DM Sans',sans-serif;padding:6px 10px;border:1px solid rgba(20,17,13,.18);border-radius:8px;background:rgba(255,255,255,.6);width:140px;box-sizing:border-box;margin-top:4px">
+          <div class="modal-headline-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <h2 style="font:400 clamp(24px,6vw,34px)/1.1 'Instrument Serif',serif;margin:0;letter-spacing:-.01em">Your next favorite place is probably nearby.</h2>
+            <input class="modal-referral-input" value="{{ waitlist.referralCode }}" onChange="{{ onReferralCode }}" placeholder="referral code?" style="flex-shrink:0;font:400 13px 'DM Sans',sans-serif;padding:6px 10px;border:1px solid rgba(20,17,13,.18);border-radius:8px;background:rgba(255,255,255,.6);width:140px;box-sizing:border-box;margin-top:4px">
           </div>
           <div style="height:10px"></div>
           <sc-if value="{{ referralFromLink }}" hint-placeholder-val="{{ false }}">
@@ -61,7 +75,7 @@
           <p style="font:400 14px/1.55 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 0 22px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
           <form onSubmit="{{ onSubmit }}" style="text-align:left">
             <input value="{{ waitlist.company }}" onChange="{{ onCompany }}" name="website_url" type="text" tabindex="-1" autocomplete="new-password" data-lpignore="true" data-1p-ignore aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="two-col-grid" style="margin-bottom:12px">
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Email</div>
                 <input value="{{ waitlist.email }}" onChange="{{ onEmail }}" placeholder="you@email.com" type="email" required style="{{ inputStyle }}">
@@ -71,7 +85,7 @@
                 <input value="{{ waitlist.name }}" onChange="{{ onName }}" placeholder="your name" style="{{ inputStyle }}">
               </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="two-col-grid" style="margin-bottom:12px">
               <div>
                 <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:6px">Location</div>
                 <select value="{{ waitlist.cityZip }}" onChange="{{ onCity }}" style="{{ selectStyle }}">
@@ -114,7 +128,7 @@
         <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
           <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:12px">Admit one · Ann Arbor waitlist</div>
           <div style="position:relative;display:inline-block">
-            <div style="font:400 44px/1.1 'Instrument Serif',serif;margin-bottom:10px">You're in.</div>
+            <div style="font:400 clamp(30px,9vw,44px)/1.1 'Instrument Serif',serif;margin-bottom:10px">You're in.</div>
             <sc-for list="{{ confettiPieces }}" as="p" hint-placeholder-count="12">
               <div style="{{ p.style }}"></div>
             </sc-for>
@@ -145,12 +159,12 @@
         </sc-if>
       </div>
 
-      <div style="position:relative;align-self:stretch;width:2px;background-image:repeating-linear-gradient(rgba(20,17,13,.22) 0 6px, transparent 6px 12px)">
+      <div class="modal-divider" style="position:relative;align-self:stretch;width:2px;background-image:repeating-linear-gradient(rgba(20,17,13,.22) 0 6px, transparent 6px 12px)">
         <div style="position:absolute;top:-12px;left:-11px;width:22px;height:22px;border-radius:50%;background:#f7f2e8"></div>
         <div style="position:absolute;bottom:-12px;left:-11px;width:22px;height:22px;border-radius:50%;background:#f7f2e8"></div>
       </div>
 
-      <div style="width:210px;flex-shrink:0;background:#efe8da;padding:64px 20px 22px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;box-sizing:border-box">
+      <div class="modal-ticket" style="width:210px;flex-shrink:0;background:#efe8da;padding:64px 20px 22px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;box-sizing:border-box">
         <div style="font:500 12px/1.5 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop<br>Ann Arbor, MI</div>
         <sc-if value="{{ !submitted }}" hint-placeholder-val="{{ true }}">
           <div style="font:400 28px/1.3 'Instrument Serif',serif;font-style:italic;color:#c8431c">Admit One</div>
@@ -158,7 +172,7 @@
         <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
           <div>
             <div style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:8px">No.</div>
-            <div style="font:400 64px/1 'Instrument Serif',serif;color:#c8431c">{{ resultPosition }}</div>
+            <div style="font:400 clamp(40px,13vw,64px)/1 'Instrument Serif',serif;color:#c8431c">{{ resultPosition }}</div>
           </div>
         </sc-if>
         <div style="display:flex;gap:2px">
@@ -173,11 +187,11 @@
 
 <div style="{{ navStyle }}">
   <div style="display:flex;align-items:center;gap:10px">
-    <img src="./assets/hoppr-lockup-v2-trimmed.png" alt="Hoppr" style="height:45px;width:auto;object-fit:contain">
+    <img class="nav-logo" src="./assets/hoppr-lockup-v2-trimmed.png" alt="Hoppr" style="height:45px;width:auto;object-fit:contain">
   </div>
   <div style="display:flex;align-items:center;gap:28px">
-    <div onClick="{{ goLearn }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">How it works</div>
-    <div onClick="{{ goTogether }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">Together</div>
+    <div class="nav-text-link" onClick="{{ goLearn }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">How it works</div>
+    <div class="nav-text-link" onClick="{{ goTogether }}" style="cursor:pointer;font:500 13px/1 'DM Sans',sans-serif">Together</div>
     <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#c8431c;color:#f7f2e8;border-radius:100px;padding:10px 18px;font:500 13px/1 'DM Sans',sans-serif">Join waitlist ↗</div>
   </div>
 </div>
@@ -192,7 +206,7 @@
 
   <div style="text-align:center;max-width:640px;margin:0 auto 44px">
     <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(20,17,13,.5);margin-bottom:20px"> FOR WHEN “idk” IS THE PLAN </div>
-    <h1 style="font:400 62px/1.05 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.02em">Don't know where to go? <span style="color:#c8431c;font-style:italic">good.</span></h1>
+    <h1 style="font:400 clamp(34px,9vw,62px)/1.05 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.02em">Don't know where to go? <span style="color:#c8431c;font-style:italic">good.</span></h1>
     <p style="font:400 18px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 30px;text-wrap:pretty">Tell Hoppr what you're feeling. We'll narrow down the noise and find somewhere that fits.</p>
     <div style="display:flex;flex-direction:column;align-items:center;gap:22px">
       <div class="join-btn" onClick="{{ onOpenWaitlist }}" style="cursor:pointer;background:#14110d;color:#f7f2e8;border-radius:100px;padding:18px 34px;font:500 16px/1 'DM Sans',sans-serif">Join waitlist →</div>
@@ -201,7 +215,7 @@
   </div>
 
   <div style="background:#efe8da;border-radius:32px;padding:44px 5vw;display:flex;justify-content:center;align-items:center;gap:36px;flex-wrap:wrap;position:relative;overflow:hidden">
-    <div style="{{ phoneOnboardStyle }}">
+    <div class="hero-phone" style="{{ phoneOnboardStyle }}">
       <div style="padding:22px 18px;display:flex;flex-direction:column;height:100%;box-sizing:border-box">
         <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:16px">tonight, i want...</div>
         <div style="display:flex;flex-direction:column;gap:8px">
@@ -212,7 +226,7 @@
       </div>
     </div>
     <img src="./assets/hoppr-mark.png" alt="" style="{{ heroMascotStyle }}">
-    <div style="{{ phoneResultStyle }}">
+    <div class="hero-phone" style="{{ phoneResultStyle }}">
       <div style="{{ heroResultStyle }}">
         <div style="font:400 10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#c8431c;margin-bottom:10px">hoppr's pick</div>
         <div style="height:100px;border-radius:14px;background:repeating-linear-gradient(135deg,#e4dccb 0 9px,#ded5c1 9px 18px);margin-bottom:12px"></div>
@@ -229,7 +243,7 @@
   <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute;top:26px;right:8%;animation:bob 3.6s ease-in-out infinite;--r:12deg"><path d="M12 2c-3 3-6 6-6 10a6 6 0 0012 0c0-4-3-7-6-10Z" fill="#c8431c" opacity="0.7"/></svg>
   <div style="position:sticky;top:120px;flex:1;min-width:280px">
     <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">01 / it learns</div>
-    <h2 style="font:400 40px/1.12 'Instrument Serif',serif;margin:0 0 16px;letter-spacing:-.01em;text-wrap:pretty">The more you hop, the more it gets you.</h2>
+    <h2 style="font:400 clamp(26px,7vw,40px)/1.12 'Instrument Serif',serif;margin:0 0 16px;letter-spacing:-.01em;text-wrap:pretty">The more you hop, the more it gets you.</h2>
     <p style="font:400 16px/1.6 'DM Sans',sans-serif;color:rgba(20,17,13,.62);margin:0">Every answer, save, and rating shapes your taste. Recommendations start feeling less like search results and more like something you'd actually pick.</p>
   </div>
   <div style="flex:1;min-width:280px;background:#fffdf8;border-radius:20px;padding:26px;box-sizing:border-box">
@@ -294,7 +308,7 @@
   <div style="{{ menuPanelStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" style="position:absolute;top:22px;right:9%;animation:bob 3.5s ease-in-out infinite .4s;--r:8deg"><path d="M4 3h13l3 3-3 3H4V3Z" fill="#c8431c" opacity=".75"/></svg>
     <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">03 / decide</div>
-    <h2 style="font:400 40px/1.1 'Instrument Serif',serif;margin:0 0 30px;letter-spacing:-.01em">What should I order?</h2>
+    <h2 style="font:400 clamp(26px,7vw,40px)/1.1 'Instrument Serif',serif;margin:0 0 30px;letter-spacing:-.01em">What should I order?</h2>
     <div style="{{ phoneMenuStyle }}">
       <div style="padding:20px 16px;box-sizing:border-box;height:100%;display:flex;flex-direction:column;text-align:left;position:relative">
         <div style="font:400 9px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(20,17,13,.4);margin-bottom:12px">menu</div>
@@ -320,8 +334,8 @@
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.5" stroke-linecap="round" style="position:absolute;top:0;left:6%;opacity:.35;animation:bob 4s ease-in-out infinite .2s"><path d="M6 12c0-4 3-7 6-7s6 3 6 7-3 9-6 9-6-5-6-9Z"/></svg>
   <svg width="18" height="18" viewBox="0 0 24 24" style="position:absolute;top:30px;right:8%;opacity:.4;animation:bob 3.6s ease-in-out infinite .5s;--r:-10deg"><path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10Z" fill="#c8431c" opacity=".8"/></svg>
   <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">04 / together</div>
-  <h2 style="font:400 50px/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Nobody wants to pick.</h2>
-  <h2 style="font:400 50px/1.1 'Instrument Serif',serif;margin:0 0 12px;letter-spacing:-.01em">So <span style="color:#c8431c;font-style:italic">everybody</span> does.</h2>
+  <h2 style="font:400 clamp(28px,8vw,50px)/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Nobody wants to pick.</h2>
+  <h2 style="font:400 clamp(28px,8vw,50px)/1.1 'Instrument Serif',serif;margin:0 0 12px;letter-spacing:-.01em">So <span style="color:#c8431c;font-style:italic">everybody</span> does.</h2>
   <p style="font:400 15px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.55);margin:0 0 46px">Everyone picks separately. Hoppr finds the overlap.</p>
   <div style="position:relative;max-width:500px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center">
     <sc-for list="{{ togetherVotes }}" as="v" hint-placeholder-count="4">
@@ -340,7 +354,7 @@
 <div ref="{{ refTry }}" data-sec="try" data-screen-label="Try Hoppr" style="{{ tryPanelStyle }}">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.5" stroke-linecap="round" style="position:absolute;top:20px;left:7%;opacity:.35;animation:bob 4.4s ease-in-out infinite"><path d="M4 12c3-6 6-9 8-9s5 3 8 9c-3 6-6 9-8 9s-5-3-8-9Z"/><circle cx="12" cy="12" r="2.4"/></svg>
   <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">Try hoppr</div>
-  <h2 style="font:400 36px/1.15 'Instrument Serif',serif;margin:0 0 30px;letter-spacing:-.01em">What sounds right tonight?</h2>
+  <h2 style="font:400 clamp(24px,6vw,36px)/1.15 'Instrument Serif',serif;margin:0 0 30px;letter-spacing:-.01em">What sounds right tonight?</h2>
   <sc-if value="{{ !tryShowResult }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:22px">
       <sc-for list="{{ tryQ1Options }}" as="o" hint-placeholder-count="4">
@@ -375,7 +389,7 @@
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14110d" stroke-width="1.5" stroke-linecap="round" style="position:absolute;top:30px;right:7%;opacity:.35;animation:bob 4.2s ease-in-out infinite .5s"><path d="M4 3h13l3 3-3 3H4V3Z"/></svg>
   <div style="text-align:center;margin-bottom:36px">
     <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:14px">Built for actual indecisive people</div>
-    <h2 style="font:400 38px/1.1 'Instrument Serif',serif;margin:0;letter-spacing:-.01em">You know the feeling.</h2>
+    <h2 style="font:400 clamp(24px,6vw,38px)/1.1 'Instrument Serif',serif;margin:0;letter-spacing:-.01em">You know the feeling.</h2>
   </div>
   <div style="display:flex;gap:14px;width:max-content;animation:marqueeL 34s linear infinite;margin-bottom:14px">
     <sc-for list="{{ marqueeRow1 }}" as="m" hint-placeholder-count="8">
@@ -397,8 +411,8 @@
   <img src="./assets/hoppr-mark.png" alt="" style="{{ waitlistMascotStyle }}">
 
   <div style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#c8431c;margin-bottom:18px">Ann Arbor waitlist</div>
-  <h2 style="font:400 52px/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Your next favorite place</h2>
-  <h2 style="font:400 52px/1.1 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.01em">is probably nearby.</h2>
+  <h2 style="font:400 clamp(28px,8vw,52px)/1.1 'Instrument Serif',serif;margin:0 0 4px;letter-spacing:-.01em">Your next favorite place</h2>
+  <h2 style="font:400 clamp(28px,8vw,52px)/1.1 'Instrument Serif',serif;margin:0 0 20px;letter-spacing:-.01em">is probably nearby.</h2>
   <p style="font:400 17px/1.5 'DM Sans',sans-serif;color:rgba(20,17,13,.6);margin:0 auto 28px;max-width:440px">Join the Ann Arbor waitlist. We'll email you when your spot opens.</p>
   <div style="display:inline-flex;align-items:center;gap:8px;background:#efe8da;border-radius:100px;padding:8px 16px;margin-bottom:36px;margin-right:28px">
     <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(20,17,13,.4)">First stop</div>
@@ -756,7 +770,7 @@ class Component extends DCLogic {
   }
   getOverloadStyles() {
     const p = this.state.overloadProgress; const st = this.stage.bind(this);
-    const headlineBase = { font: "400 76px/1.05 'Instrument Serif',serif", margin: 0, letterSpacing: '-.02em' };
+    const headlineBase = { font: "400 clamp(34px,11vw,76px)/1.05 'Instrument Serif',serif", margin: 0, letterSpacing: '-.02em' };
     return {
       headline1: Object.assign({}, headlineBase),
       cloud: { opacity: 1 - st(p, 0.15, 0.45), transform: 'scale(' + (1 - st(p, 0.15, 0.45) * 0.25) + ')', transition: 'none', position: 'relative', display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', width: '100%' },
